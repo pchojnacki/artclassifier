@@ -33,28 +33,38 @@ public class ArticleClassifier {
 
 	private Classifier classifier;
 
-	public ArticleClassifier(
-			List<Article> trainingSetArticles,
-			List<Article> validationSetArticles,
-			Classifier classifier) throws Exception {
+	public ArticleClassifier(List<Article> trainingSetArticles,
+			List<Article> validationSetArticles, Classifier classifier)
+					throws Exception {
 
 		this.labelAttribute = this.createLabelAttribute(trainingSetArticles);
 
-		Instances trainingSet = this.createInstancesFromLabeledArticles(trainingSetArticles, "trainingSet");
+		Instances trainingSet = this.createInstancesFromLabeledArticles(
+				trainingSetArticles, "trainingSet");
 
 		this.buildClassifier(trainingSet, classifier);
 
 		System.out.println(this.classifier);
 
-		Instances validationSet = this.createInstancesFromLabeledArticles(validationSetArticles, "validationSet");
+		Instances validationSet = this.createInstancesFromLabeledArticles(
+				validationSetArticles, "validationSet");
 
 		Evaluation eval = new Evaluation(trainingSet);
 		eval.evaluateModel(this.classifier, validationSet);
 		System.out.println(eval.toSummaryString());
 		System.out.println(eval.toMatrixString());
+
+		System.out.println();
+		System.out.println("Label\tFP\tFN\tF-measure");
+		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
+			String label = this.labelAttribute.value(i);
+			System.out.println(label + "\t" + eval.falsePositiveRate(i) + "\t"
+					+ eval.falseNegativeRate(i) + "\t" + eval.fMeasure(i));
+		}
 	}
 
-	private void buildClassifier(Instances trainingSet, Classifier classifier) throws Exception {
+	private void buildClassifier(Instances trainingSet, Classifier classifier)
+			throws Exception {
 		if (FILTERS != null) {
 			MultiFilter multiFilter = new MultiFilter();
 			multiFilter.setInputFormat(trainingSet);
@@ -70,7 +80,8 @@ public class ArticleClassifier {
 		this.classifier.buildClassifier(trainingSet);
 	}
 
-	private Instances createInstancesFromLabeledArticles(List<Article> labeledArticles, String datasetName) {
+	private Instances createInstancesFromLabeledArticles(
+			List<Article> labeledArticles, String datasetName) {
 		Instances instances = this.createEmptyInstancesSet(datasetName);
 		for (Article article : labeledArticles) {
 			Instance instance = this.articleToInstance(article);
@@ -157,11 +168,11 @@ public class ArticleClassifier {
 						filter.setLowerCaseTokens(true);
 						filter.setUseStoplist(true);
 						filter.setMinTermFreq(5);
-						filter.setStopwords(new File("/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
+						filter.setStopwords(new File(
+								"/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
 						return filter;
 					}
-				},
-				new Feature("titleTextCleaned", FeatureType.STRING) {
+				}, new Feature("titleTextCleaned", FeatureType.STRING) {
 
 					@Override
 					protected String getStringFeature(Article article) {
@@ -185,11 +196,11 @@ public class ArticleClassifier {
 						filter.setTokenizer(new SpaceTokenizer());
 						filter.setLowerCaseTokens(true);
 						filter.setUseStoplist(true);
-						filter.setStopwords(new File("/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
+						filter.setStopwords(new File(
+								"/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
 						return filter;
 					}
-				},
-				new Feature("numberOfWordsInTitle", FeatureType.NUMERIC) {
+				}, new Feature("numberOfWordsInTitle", FeatureType.NUMERIC) {
 					@Override
 					protected double getNumericFeature(Article article) {
 						String title = article.getTitle();
@@ -204,7 +215,6 @@ public class ArticleClassifier {
 						}
 						return numberOfWords;
 					}
-				},
-		};
+				}, };
 	}
 }
