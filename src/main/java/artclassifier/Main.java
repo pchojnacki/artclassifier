@@ -26,7 +26,7 @@ public class Main {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						new File("/home/yurii/workspaces/holmes/training-data/2014.01.26.json")),
-						new TypeReference<List<Article>>() {
+				new TypeReference<List<Article>>() {
 				});
 
 		Collections.shuffle(articles, new Random(10));
@@ -34,11 +34,13 @@ public class Main {
 		int trainingSetSize = (articles.size() * 7) / 10;
 
 		List<Article> trainingSet = articles.subList(0, trainingSetSize);
+
 		List<Article> validationSet = articles.subList(trainingSetSize, articles.size());
 
-		Classifier classifier = getAttributeSelectionClassifier(getSVM());
-
-		new ArticleClassifier(trainingSet, validationSet, classifier);
+		new ArticleClassifier(
+				trainingSet,
+				validationSet,
+				getAttributeSelectionClassifier(getSVM()));
 	}
 
 	private static Classifier getAttributeSelectionClassifier(Classifier c) {
@@ -46,8 +48,7 @@ public class Main {
 		InfoGainAttributeEval infoGain = new InfoGainAttributeEval();
 		classifier.setEvaluator(infoGain);
 		Ranker ranker = new Ranker();
-		// ranker.setNumToSelect(100);
-		ranker.setThreshold(0.07);
+		ranker.setNumToSelect(300);
 		classifier.setSearch(ranker);
 		classifier.setClassifier(c);
 		return classifier;

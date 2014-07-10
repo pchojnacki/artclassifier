@@ -1,5 +1,8 @@
 package artclassifier;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -42,6 +45,16 @@ public abstract class Feature {
 
 	protected String getStringFeature(Article article) {
 		throw new UnsupportedOperationException();
+	}
+
+	protected int countRegrexp(String s, String regexp) {
+		int count = 0;
+		Pattern pattern = Pattern.compile(regexp);
+		Matcher matcher = pattern.matcher(s);
+		while (matcher.find()) {
+			count++;
+		}
+		return count;
 	}
 
 	public boolean hasFilter() {

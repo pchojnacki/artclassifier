@@ -1,12 +1,12 @@
 package artclassifier;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -212,17 +212,70 @@ public class ArticleClassifier {
 					@Override
 					protected double getNumericFeature(Article article) {
 						String title = article.getTitle();
-						if ((title == null) || title.isEmpty()) {
-							return 0;
-						}
-						int numberOfWords = 0;
-						Pattern pattern = Pattern.compile("\\p{L}{3,}");
-						Matcher matcher = pattern.matcher(title);
-						while (matcher.find()) {
-							numberOfWords++;
-						}
-						return numberOfWords;
+						int occurences = this.countRegrexp(title, "[^s]{3,}");
+						return occurences;
 					}
-				}, };
+				},
+				new Feature("numberOfYearsInWikiText", FeatureType.NUMERIC) {
+					@Override
+					protected double getNumericFeature(Article article) {
+						String wikiText = article.getWikiText();
+						int occurences = this.countRegrexp(wikiText, "(19|20)\\d{2}");
+						return occurences;
+					}
+				},
+				new Feature("numberOfNamesInTitle", FeatureType.NUMERIC) {
+					private Set<String> names = new HashSet<>();
+					{
+						try (BufferedReader br = new BufferedReader(new FileReader("/home/yurii/sandbox/artclassifier/src/main/resources/names/names.txt"))) {
+							String s;
+							while ((s = br.readLine()) != null) {
+								this.names.add(s);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					protected double getNumericFeature(Article article) {
+						String title = article.getTitle();
+						String[] parts = title.split("\\P{L}+");
+						int count = 0;
+						for (String p : parts) {
+							if (this.names.contains(p)) {
+								count++;
+							}
+						}
+						return count;
+					}
+				},
+				new Feature("numberOfNamesInWikiText", FeatureType.NUMERIC) {
+					private Set<String> names = new HashSet<>();
+					{
+						try (BufferedReader br = new BufferedReader(new FileReader("/home/yurii/sandbox/artclassifier/src/main/resources/names/names.txt"))) {
+							String s;
+							while ((s = br.readLine()) != null) {
+								this.names.add(s);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					protected double getNumericFeature(Article article) {
+						String wikiText = article.getWikiText();
+						String[] parts = wikiText.split("\\P{L}+");
+						int count = 0;
+						for (String p : parts) {
+							if (this.names.contains(p)) {
+								count++;
+							}
+						}
+						return count;
+					}
+				},
+		};
 	}
 }
