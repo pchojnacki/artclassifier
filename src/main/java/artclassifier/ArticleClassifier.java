@@ -55,11 +55,14 @@ public class ArticleClassifier {
 		System.out.println(eval.toMatrixString());
 
 		System.out.println();
-		System.out.println("Label\tFP\tFN\tF-measure");
+		System.out.println("FP\tFN\tF-measure\tLabel");
 		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
 			String label = this.labelAttribute.value(i);
-			System.out.println(label + "\t" + eval.falsePositiveRate(i) + "\t"
-					+ eval.falseNegativeRate(i) + "\t" + eval.fMeasure(i));
+			System.out.printf("%.2f\t%.2f\t%.2f\t%s\n",
+					eval.falsePositiveRate(i),
+					eval.falseNegativeRate(i),
+					eval.fMeasure(i),
+					label);
 		}
 	}
 
