@@ -152,8 +152,9 @@ public class ArticleClassifier {
 					@Override
 					protected String getStringFeature(Article article) {
 						String wikiText = article.getWikiText();
-						wikiText = wikiText.replaceAll("[^\\p{L}\\d]+", " ");
+						wikiText = wikiText.replaceAll("(19|20)\\d{2}", " year ");
 						wikiText = wikiText.replaceAll("\\d+", " number ");
+						wikiText = wikiText.replaceAll("\\P{L}+", " ");
 						return wikiText;
 					}
 
@@ -183,8 +184,9 @@ public class ArticleClassifier {
 					@Override
 					protected String getStringFeature(Article article) {
 						String title = article.getTitle();
-						title = title.replaceAll("[^\\p{L}\\d]+", " ");
+						title = title.replaceAll("(19|20)\\d{2}", " year ");
 						title = title.replaceAll("\\d+", " number ");
+						title = title.replaceAll("\\P{L}+", " ");
 						return title;
 					}
 
