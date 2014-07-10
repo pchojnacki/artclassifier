@@ -9,7 +9,9 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import weka.attributeSelection.ASEvaluation;
 import weka.attributeSelection.InfoGainAttributeEval;
+import weka.attributeSelection.PrincipalComponents;
 import weka.attributeSelection.Ranker;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
@@ -26,7 +28,7 @@ public class Main {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						new File("/home/yurii/workspaces/holmes/training-data/2014.01.26.json")),
-						new TypeReference<List<Article>>() {
+				new TypeReference<List<Article>>() {
 				});
 
 		Collections.shuffle(articles, new Random(10));
@@ -40,16 +42,23 @@ public class Main {
 		new ArticleClassifier(
 				trainingSet,
 				validationSet,
-				getAttributeSelectionClassifier(getSVM()));
+				// see:
+				// http://stackoverflow.com/questions/11482108/wekas-pca-is-taking-too-long-to-run/11793003#11793003
+				getAttributeSelectionClassifier(getAttributeSelectionClassifier(getSVM(),
+						new PrincipalComponents(), 30), new InfoGainAttributeEval(),
+						300)
+		// getAttributeSelectionClassifier(getSVM(), new
+		// InfoGainAttributeEval(), 300)
+		);
 	}
 
-	private static Classifier getAttributeSelectionClassifier(Classifier c) {
+	private static Classifier getAttributeSelectionClassifier(Classifier c, ASEvaluation eval, int numToSelect) {
 		AttributeSelectedClassifier classifier = new AttributeSelectedClassifier();
-		InfoGainAttributeEval infoGain = new InfoGainAttributeEval();
-		classifier.setEvaluator(infoGain);
+		classifier.setEvaluator(eval);
 		Ranker ranker = new Ranker();
-		ranker.setNumToSelect(300);
+		ranker.setNumToSelect(numToSelect);
 		classifier.setSearch(ranker);
+
 		classifier.setClassifier(c);
 		return classifier;
 	}
