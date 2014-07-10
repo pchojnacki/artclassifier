@@ -35,7 +35,7 @@ public class ArticleClassifier {
 
 	public ArticleClassifier(List<Article> trainingSetArticles,
 			List<Article> validationSetArticles, Classifier classifier)
-					throws Exception {
+			throws Exception {
 
 		this.labelAttribute = this.createLabelAttribute(trainingSetArticles);
 
@@ -55,13 +55,16 @@ public class ArticleClassifier {
 		System.out.println(eval.toMatrixString());
 
 		System.out.println();
-		System.out.println("FP\tFN\tF-measure\tLabel");
+		System.out.println("FP\tFN\tF-score\tRecall\tPrecision\tLabel");
 		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
 			String label = this.labelAttribute.value(i);
-			System.out.printf("%.2f\t%.2f\t%.2f\t%s\n",
+
+			System.out.printf("%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n",
 					eval.falsePositiveRate(i),
 					eval.falseNegativeRate(i),
 					eval.fMeasure(i),
+					eval.recall(i),
+					eval.precision(i),
 					label);
 		}
 	}
