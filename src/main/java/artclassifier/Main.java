@@ -26,7 +26,7 @@ public class Main {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						new File("/home/yurii/workspaces/holmes/training-data/2014.01.26.json")),
-				new TypeReference<List<Article>>() {
+						new TypeReference<List<Article>>() {
 				});
 
 		Collections.shuffle(articles, new Random(10));
@@ -59,7 +59,7 @@ public class Main {
 
 		PolyKernel polyKernel = new PolyKernel();
 		polyKernel.setExponent(1.5);
-		// smo.setKernel(polyKernel);
+		smo.setKernel(polyKernel);
 
 		// smo.setBuildLogisticModels(true);
 		return smo;
