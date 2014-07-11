@@ -1,4 +1,4 @@
-package artclassifier;
+package artclassifier.util;
 
 import weka.core.tokenizers.Tokenizer;
 

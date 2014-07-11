@@ -28,8 +28,8 @@ public class Main {
 
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
-						new File("/home/yurii/workspaces/holmes/training-data/2014.01.26.json")),
-						new TypeReference<List<Article>>() {
+						new File("/Users/yura/workspaces/holmes/training-data/2014.01.26.json")),
+				new TypeReference<List<Article>>() {
 				});
 
 		Collections.shuffle(articles, new Random(10));

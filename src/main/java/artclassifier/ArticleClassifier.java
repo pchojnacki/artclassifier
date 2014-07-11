@@ -1,8 +1,5 @@
 package artclassifier;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +16,10 @@ import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.MultiFilter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
-import artclassifier.Feature.FeatureType;
+import artclassifier.feature.Feature;
+import artclassifier.feature.NumericFeature;
+import artclassifier.feature.StringFeature;
+import artclassifier.util.Name;
 
 // TODO: look at wiki markup parsing stuff: https://code.google.com/p/gwtwiki/wiki/Mediawiki2HTML
 
@@ -174,110 +174,73 @@ public class ArticleClassifier {
 
 		return new Feature[] {
 
-				new Feature("wikiTextCleaned", FeatureType.STRING) {
-
+				new StringFeature("wikiTextCleaned") {
 					@Override
-					protected String getStringFeature(Article article) {
+					protected String calculate(Article article) {
 						String wikiText = article.getWikiText();
-						wikiText = wikiText.replaceAll("(19|20)\\d{2}", " year ");
-						wikiText = wikiText.replaceAll("\\d+", " number ");
-						wikiText = wikiText.replaceAll("\\P{L}+", " ");
+						wikiText = super.replaceYears(wikiText);
+						wikiText = super.replaceNumbers(wikiText);
+						wikiText = super.removeNonCharacters(wikiText);
 						return wikiText;
 					}
 
 					@Override
-					public boolean hasFilter() {
-						return true;
-					}
-
-					@Override
-					public Filter getFilter() {
-						StringToWordVector filter = new StringToWordVector();
-						filter.setAttributeIndices("1");
-						filter.setAttributeNamePrefix("wikiTextCleaned_");
+					public StringToWordVector getFilter() {
+						StringToWordVector filter = super.getFilter();
+						filter.setAttributeNamePrefix("body_");
 						filter.setTFTransform(true);
 						filter.setIDFTransform(true);
-						filter.setStemmer(new SnowballStemmer());
-						filter.setTokenizer(new SpaceTokenizer());
-						filter.setLowerCaseTokens(true);
-						filter.setUseStoplist(true);
 						filter.setMinTermFreq(5);
-						filter.setStopwords(new File(
-								"/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
 						return filter;
 					}
 				},
 
-				new Feature("titleTextCleaned", FeatureType.STRING) {
-
+				new StringFeature("titleTextCleaned") {
 					@Override
-					protected String getStringFeature(Article article) {
+					protected String calculate(Article article) {
 						String title = article.getTitle();
-						title = title.replaceAll("(19|20)\\d{2}", " year ");
-						title = title.replaceAll("\\d+", " number ");
-						title = title.replaceAll("\\P{L}+", " ");
+						title = super.replaceYears(title);
+						title = super.replaceNumbers(title);
+						title = super.removeNonCharacters(title);
 						return title;
 					}
 
 					@Override
-					public boolean hasFilter() {
-						return true;
-					}
-
-					@Override
-					public Filter getFilter() {
-						StringToWordVector filter = new StringToWordVector();
-						filter.setAttributeIndices("1");
-						filter.setAttributeNamePrefix("titleTextCleaned_");
-						filter.setStemmer(new SnowballStemmer());
-						filter.setTokenizer(new SpaceTokenizer());
-						filter.setLowerCaseTokens(true);
-						filter.setUseStoplist(true);
-						filter.setStopwords(new File(
-								"/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
+					public StringToWordVector getFilter() {
+						StringToWordVector filter = super.getFilter();
+						filter.setAttributeNamePrefix("title_");
 						return filter;
 					}
 				},
 
-				new Feature("numberOfWordsInTitle", FeatureType.NUMERIC) {
+				new NumericFeature("numberOfWordsInTitle") {
 					@Override
-					protected double getNumericFeature(Article article) {
+					protected double calculate(Article article) {
 						String title = article.getTitle();
-						int occurences = this.countRegrexp(title, "[^s]{3,}");
+						int occurences =
+								this.countRegrexp(title, "[^s]{3,}");
 						return occurences;
 					}
 				},
 
-				new Feature("numberOfYearsInWikiText", FeatureType.NUMERIC) {
+				new NumericFeature("numberOfYearsInWikiText") {
 					@Override
-					protected double getNumericFeature(Article article) {
+					protected double calculate(Article article) {
 						String wikiText = article.getWikiText();
-						int occurences = this.countRegrexp(wikiText, "(19|20)\\d{2}");
+						int occurences =
+								this.countRegrexp(wikiText, "(19|20)\\d{2}");
 						return occurences;
 					}
 				},
 
-				new Feature("numberOfNamesInTitle", FeatureType.NUMERIC) {
-					private Set<String> names = new HashSet<>();
-					{
-						try (BufferedReader br = new BufferedReader(new FileReader(
-								"/home/yurii/sandbox/artclassifier/src/main/resources/names/names.txt"))) {
-							String s;
-							while ((s = br.readLine()) != null) {
-								this.names.add(s);
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-
+				new NumericFeature("numberOfNamesInTitle") {
 					@Override
-					protected double getNumericFeature(Article article) {
+					protected double calculate(Article article) {
 						String title = article.getTitle();
 						String[] parts = title.split("\\P{L}+");
 						int count = 0;
 						for (String p : parts) {
-							if (this.names.contains(p)) {
+							if (Name.isName(p)) {
 								count++;
 							}
 						}
@@ -285,27 +248,14 @@ public class ArticleClassifier {
 					}
 				},
 
-				new Feature("numberOfNamesInWikiText", FeatureType.NUMERIC) {
-					private Set<String> names = new HashSet<>();
-					{
-						try (BufferedReader br = new BufferedReader(new FileReader(
-								"/home/yurii/sandbox/artclassifier/src/main/resources/names/names.txt"))) {
-							String s;
-							while ((s = br.readLine()) != null) {
-								this.names.add(s);
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-
+				new NumericFeature("numberOfNamesInWikiText") {
 					@Override
-					protected double getNumericFeature(Article article) {
+					protected double calculate(Article article) {
 						String wikiText = article.getWikiText();
 						String[] parts = wikiText.split("\\P{L}+");
 						int count = 0;
 						for (String p : parts) {
-							if (this.names.contains(p)) {
+							if (Name.isName(p)) {
 								count++;
 							}
 						}

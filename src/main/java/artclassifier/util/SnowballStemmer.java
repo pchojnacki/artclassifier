@@ -1,4 +1,4 @@
-package artclassifier;
+package artclassifier.util;
 
 /*
  *    This program is free software; you can redistribute it and/or modify
