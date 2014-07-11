@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import weka.classifiers.Classifier;
@@ -15,7 +16,6 @@ import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.stemmers.SnowballStemmer;
 import weka.filters.Filter;
 import weka.filters.MultiFilter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -35,7 +35,7 @@ public class ArticleClassifier {
 
 	public ArticleClassifier(List<Article> trainingSetArticles,
 			List<Article> validationSetArticles, Classifier classifier)
-			throws Exception {
+					throws Exception {
 
 		this.labelAttribute = this.createLabelAttribute(trainingSetArticles);
 
@@ -46,10 +46,32 @@ public class ArticleClassifier {
 
 		System.out.println(this.classifier);
 
+		// this.doCrossValidation(trainingSet, 10);
+
+		this.evaluateOnValidationSet(validationSetArticles);
+	}
+
+	private void doCrossValidation(Instances trainingSet, int foldsNum) throws Exception {
+
+		System.out.println();
+		System.out.println("Cross validation on training set");
+		System.out.println();
+
+		Evaluation cvEaluation = new Evaluation(trainingSet);
+		cvEaluation.crossValidateModel(this.classifier, trainingSet, foldsNum, new Random(1));
+		System.out.println(cvEaluation.toSummaryString());
+	}
+
+	private void evaluateOnValidationSet(List<Article> validationSetArticles) throws Exception {
+
+		System.out.println();
+		System.out.println("Evaluating on validation set");
+		System.out.println();
+
 		Instances validationSet = this.createInstancesFromLabeledArticles(
 				validationSetArticles, "validationSet");
 
-		Evaluation eval = new Evaluation(trainingSet);
+		Evaluation eval = new Evaluation(validationSet);
 		eval.evaluateModel(this.classifier, validationSet);
 		System.out.println(eval.toSummaryString());
 		System.out.println(eval.toMatrixString());
@@ -71,6 +93,7 @@ public class ArticleClassifier {
 
 	private void buildClassifier(Instances trainingSet, Classifier classifier)
 			throws Exception {
+		System.out.println();
 		if (FILTERS != null) {
 			MultiFilter multiFilter = new MultiFilter();
 			multiFilter.setInputFormat(trainingSet);
@@ -146,7 +169,9 @@ public class ArticleClassifier {
 	}
 
 	private static Feature[] getFeatures() {
+
 		return new Feature[] {
+
 				new Feature("wikiTextCleaned", FeatureType.STRING) {
 
 					@Override
@@ -179,7 +204,9 @@ public class ArticleClassifier {
 								"/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
 						return filter;
 					}
-				}, new Feature("titleTextCleaned", FeatureType.STRING) {
+				},
+
+				new Feature("titleTextCleaned", FeatureType.STRING) {
 
 					@Override
 					protected String getStringFeature(Article article) {
@@ -208,7 +235,9 @@ public class ArticleClassifier {
 								"/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
 						return filter;
 					}
-				}, new Feature("numberOfWordsInTitle", FeatureType.NUMERIC) {
+				},
+
+				new Feature("numberOfWordsInTitle", FeatureType.NUMERIC) {
 					@Override
 					protected double getNumericFeature(Article article) {
 						String title = article.getTitle();
@@ -216,6 +245,7 @@ public class ArticleClassifier {
 						return occurences;
 					}
 				},
+
 				new Feature("numberOfYearsInWikiText", FeatureType.NUMERIC) {
 					@Override
 					protected double getNumericFeature(Article article) {
@@ -224,6 +254,7 @@ public class ArticleClassifier {
 						return occurences;
 					}
 				},
+
 				new Feature("numberOfNamesInTitle", FeatureType.NUMERIC) {
 					private Set<String> names = new HashSet<>();
 					{
@@ -251,6 +282,7 @@ public class ArticleClassifier {
 						return count;
 					}
 				},
+
 				new Feature("numberOfNamesInWikiText", FeatureType.NUMERIC) {
 					private Set<String> names = new HashSet<>();
 					{
