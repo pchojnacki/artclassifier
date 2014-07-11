@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
@@ -51,20 +53,34 @@ public class Main {
 		// 30),
 		// new InfoGainAttributeEval(), 300);
 
+		// Classifier, which measures informativeness of attributes, and taking
+		// into account only 300 most informative
 		classifier = getAttributeSelectionClassifier(getSVM(), new InfoGainAttributeEval(), 300);
 
 		boolean performCrossValidation = false;
 
+		// Learn classifier of articles
 		ArticleClassifier articleClassifier =
 				new ArticleClassifier(trainingSet, validationSet, classifier, performCrossValidation);
 
-		for (int i = 0; i < 10; i++) {
+		// Just for example: classifying first 40 articles from validation set
+
+		for (int i = 0; i < 40; i++) {
 			Article article = validationSet.get(i);
-			articleClassifier.calssify(article);
-			Map<String, Double> result = articleClassifier.calssify(article);
+			articleClassifier.classifyWithDistribution(article);
+			Map<String, Double> result = articleClassifier.classifyWithDistribution(article);
 
 			System.out.println(article.getTitle());
-			System.out.println(result);
+
+			// Java 8 stuff - must be refactored
+			List<Entry<String, Double>> resultSortedByValue =
+					result.entrySet().stream()
+					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+					.collect(Collectors.toList());
+
+			for (Entry<String, Double> entry : resultSortedByValue) {
+				System.out.printf("%.3f\t%s\n", entry.getValue(), entry.getKey());
+			}
 			System.out.println();
 		}
 	}

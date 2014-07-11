@@ -63,7 +63,7 @@ public class ArticleClassifier {
 		this.evaluateOnValidationSet(validationSetArticles);
 	}
 
-	public Map<String, Double> calssify(Article article) throws Exception {
+	public Map<String, Double> classifyWithDistribution(Article article) throws Exception {
 		Instances classificationSet = this.createEmptyInstancesSet("classificationSet");
 		Instance instance = this.articleToInstance(article);
 		instance.setDataset(classificationSet);
@@ -77,6 +77,20 @@ public class ArticleClassifier {
 		}
 
 		return result;
+	}
+
+	public String calssifySingleChoise(Article article) throws Exception {
+		Map<String, Double> distribution = this.classifyWithDistribution(article);
+		String bestLabel = null;
+		double bestProbability = 0;
+		for (String label : distribution.keySet()) {
+			double probability = distribution.get(label);
+			if ((bestLabel == null) || (bestProbability < probability)) {
+				bestLabel = label;
+				bestProbability = probability;
+			}
+		}
+		return bestLabel;
 	}
 
 	private void doCrossValidation(Instances trainingSet, int foldsNum) throws Exception {
