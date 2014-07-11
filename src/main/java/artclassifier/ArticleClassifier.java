@@ -21,6 +21,8 @@ import weka.filters.MultiFilter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 import artclassifier.Feature.FeatureType;
 
+// TODO: look at wiki markup parsing stuff: https://code.google.com/p/gwtwiki/wiki/Mediawiki2HTML
+
 public class ArticleClassifier {
 
 	private static final Feature[] FEATURES = getFeatures();
@@ -35,7 +37,7 @@ public class ArticleClassifier {
 
 	public ArticleClassifier(List<Article> trainingSetArticles,
 			List<Article> validationSetArticles, Classifier classifier)
-					throws Exception {
+			throws Exception {
 
 		this.labelAttribute = this.createLabelAttribute(trainingSetArticles);
 
