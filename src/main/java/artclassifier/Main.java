@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.codehaus.jackson.JsonFactory;
@@ -14,7 +15,6 @@ import org.codehaus.jackson.type.TypeReference;
 
 import weka.attributeSelection.ASEvaluation;
 import weka.attributeSelection.InfoGainAttributeEval;
-import weka.attributeSelection.PrincipalComponents;
 import weka.attributeSelection.Ranker;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
@@ -46,22 +46,34 @@ public class Main {
 
 		// see:
 		// http://stackoverflow.com/questions/11482108/wekas-pca-is-taking-too-long-to-run/11793003#11793003
-		classifier = getAttributeSelectionClassifier(
-				getAttributeSelectionClassifier(getSVM(), new PrincipalComponents(), 30),
-				new InfoGainAttributeEval(), 300);
+		// classifier = getAttributeSelectionClassifier(
+		// getAttributeSelectionClassifier(getSVM(), new PrincipalComponents(),
+		// 30),
+		// new InfoGainAttributeEval(), 300);
 
 		classifier = getAttributeSelectionClassifier(getSVM(), new InfoGainAttributeEval(), 300);
 
 		boolean performCrossValidation = false;
 
-		new ArticleClassifier(trainingSet, validationSet, classifier, performCrossValidation);
+		ArticleClassifier articleClassifier =
+				new ArticleClassifier(trainingSet, validationSet, classifier, performCrossValidation);
+
+		for (int i = 0; i < 10; i++) {
+			Article article = validationSet.get(i);
+			articleClassifier.calssify(article);
+			Map<String, Double> result = articleClassifier.calssify(article);
+
+			System.out.println(article.getTitle());
+			System.out.println(result);
+			System.out.println();
+		}
 	}
 
 	private static List<Article> readLabeledArticles() throws IOException, JsonParseException, JsonMappingException {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						new File(LABELED_ARTICLES_JSON_FILE)),
-				new TypeReference<List<Article>>() {
+						new TypeReference<List<Article>>() {
 				});
 		return articles;
 	}

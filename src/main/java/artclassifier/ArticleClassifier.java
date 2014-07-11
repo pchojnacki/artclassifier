@@ -1,8 +1,10 @@
 package artclassifier;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -21,7 +23,8 @@ import artclassifier.feature.NumericFeature;
 import artclassifier.feature.StringFeature;
 import artclassifier.util.Name;
 
-// TODO: look at wiki markup parsing stuff: https://code.google.com/p/gwtwiki/wiki/Mediawiki2HTML
+// TODO: consider usage of wiki markup parsing stuff - for creating better features
+// https://code.google.com/p/gwtwiki/wiki/Mediawiki2HTML
 
 public class ArticleClassifier {
 
@@ -58,6 +61,22 @@ public class ArticleClassifier {
 		}
 
 		this.evaluateOnValidationSet(validationSetArticles);
+	}
+
+	public Map<String, Double> calssify(Article article) throws Exception {
+		Instances classificationSet = this.createEmptyInstancesSet("classificationSet");
+		Instance instance = this.articleToInstance(article);
+		instance.setDataset(classificationSet);
+
+		double[] distribution = this.classifier.distributionForInstance(instance);
+
+		Map<String, Double> result = new HashMap<>();
+		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
+			String label = this.labelAttribute.value(i);
+			result.put(label, distribution[i]);
+		}
+
+		return result;
 	}
 
 	private void doCrossValidation(Instances trainingSet, int foldsNum) throws Exception {
