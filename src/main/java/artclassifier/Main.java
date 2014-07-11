@@ -16,6 +16,7 @@ import weka.attributeSelection.Ranker;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.supportVector.PolyKernel;
+import weka.classifiers.functions.supportVector.RBFKernel;
 import weka.classifiers.lazy.IBk;
 import weka.classifiers.meta.AttributeSelectedClassifier;
 import weka.classifiers.trees.J48;
@@ -27,8 +28,8 @@ public class Main {
 
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
-						new File("/home/yurii/workspaces/holmes/training-data/2014.01.26.json")),
-				new TypeReference<List<Article>>() {
+						new File("/Users/yura/workspaces/holmes/training-data/2014.01.26.json")),
+						new TypeReference<List<Article>>() {
 				});
 
 		Collections.shuffle(articles, new Random(10));
@@ -39,22 +40,23 @@ public class Main {
 
 		List<Article> validationSet = articles.subList(trainingSetSize, articles.size());
 
-		new ArticleClassifier(
-				trainingSet,
-				validationSet,
-				// see:
-				// http://stackoverflow.com/questions/11482108/wekas-pca-is-taking-too-long-to-run/11793003#11793003
-				getAttributeSelectionClassifier(getAttributeSelectionClassifier(getSVM(),
-						new PrincipalComponents(), 30), new InfoGainAttributeEval(),
-						300)
-		// getAttributeSelectionClassifier(getSVM(), new
-		// InfoGainAttributeEval(), 300)
-		);
+		Classifier classifier = null;
+
+		// see:
+		// http://stackoverflow.com/questions/11482108/wekas-pca-is-taking-too-long-to-run/11793003#11793003
+		classifier = getAttributeSelectionClassifier(
+				getAttributeSelectionClassifier(getSVM(), new PrincipalComponents(), 30),
+				new InfoGainAttributeEval(), 300);
+
+		classifier = getAttributeSelectionClassifier(getSVM(), new InfoGainAttributeEval(), 300);
+
+		new ArticleClassifier(trainingSet, validationSet, classifier);
 	}
 
 	private static Classifier getAttributeSelectionClassifier(Classifier c, ASEvaluation eval, int numToSelect) {
 		AttributeSelectedClassifier classifier = new AttributeSelectedClassifier();
 		classifier.setEvaluator(eval);
+
 		Ranker ranker = new Ranker();
 		ranker.setNumToSelect(numToSelect);
 		classifier.setSearch(ranker);
@@ -67,8 +69,12 @@ public class Main {
 		SMO smo = new SMO();
 
 		PolyKernel polyKernel = new PolyKernel();
-		polyKernel.setExponent(1.5);
+		polyKernel.setExponent(1.6);
 		smo.setKernel(polyKernel);
+
+		RBFKernel rbfKernel = new RBFKernel();
+		rbfKernel.setGamma(0.03);
+		// smo.setKernel(rbfKernel);
 
 		// smo.setBuildLogisticModels(true);
 		return smo;

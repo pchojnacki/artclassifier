@@ -205,7 +205,7 @@ public class ArticleClassifier {
 						filter.setLowerCaseTokens(true);
 						filter.setUseStoplist(true);
 						filter.setStopwords(new File(
-								"/home/yurii/sandbox/artclassifier/src/main/resources/stop_words/stop_words.txt"));
+								"/Users/yura/workspaces/artclassifier/src/main/resources/stop_words/stop_words.txt"));
 						return filter;
 					}
 				}, new Feature("numberOfWordsInTitle", FeatureType.NUMERIC) {
@@ -227,7 +227,7 @@ public class ArticleClassifier {
 				new Feature("numberOfNamesInTitle", FeatureType.NUMERIC) {
 					private Set<String> names = new HashSet<>();
 					{
-						try (BufferedReader br = new BufferedReader(new FileReader("/home/yurii/sandbox/artclassifier/src/main/resources/names/names.txt"))) {
+						try (BufferedReader br = new BufferedReader(new FileReader("/Users/yura/workspaces/artclassifier/src/main/resources/names/names.txt"))) {
 							String s;
 							while ((s = br.readLine()) != null) {
 								this.names.add(s);
@@ -253,7 +253,7 @@ public class ArticleClassifier {
 				new Feature("numberOfNamesInWikiText", FeatureType.NUMERIC) {
 					private Set<String> names = new HashSet<>();
 					{
-						try (BufferedReader br = new BufferedReader(new FileReader("/home/yurii/sandbox/artclassifier/src/main/resources/names/names.txt"))) {
+						try (BufferedReader br = new BufferedReader(new FileReader("/Users/yura/workspaces/artclassifier/src/main/resources/names/names.txt"))) {
 							String s;
 							while ((s = br.readLine()) != null) {
 								this.names.add(s);
