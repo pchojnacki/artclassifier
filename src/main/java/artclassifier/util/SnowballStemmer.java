@@ -39,7 +39,7 @@ import weka.gui.GenericObjectEditor;
  * Clone of SnowballStemmer from Weka, but with ability to be correctly
  * serialized (needed in crossvalidation)
  *
- * Just added 'transient' modifier to field m_Stemmer!
+ * Just added 'transient' modifier to field m_Stemmer and added @SuppressWarnings
  *
  * <!-- globalinfo-start --> A wrapper class for the Snowball stemmers. Only
  * available if the Snowball classes are in the classpath.<br/>
@@ -74,6 +74,8 @@ import weka.gui.GenericObjectEditor;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision: 5836 $
  */
+
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class SnowballStemmer
 implements Stemmer, OptionHandler {
 

@@ -35,9 +35,12 @@ public class ArticleClassifier {
 
 	private Classifier classifier;
 
-	public ArticleClassifier(List<Article> trainingSetArticles,
-			List<Article> validationSetArticles, Classifier classifier)
-			throws Exception {
+	// TODO: too many options. Create builder
+	public ArticleClassifier(
+			List<Article> trainingSetArticles,
+			List<Article> validationSetArticles,
+			Classifier classifier,
+			boolean performCrossValidation) throws Exception {
 
 		this.labelAttribute = this.createLabelAttribute(trainingSetArticles);
 
@@ -46,15 +49,20 @@ public class ArticleClassifier {
 
 		this.buildClassifier(trainingSet, classifier);
 
+		// TODO: log
 		System.out.println(this.classifier);
 
-		// this.doCrossValidation(trainingSet, 10);
+		if (performCrossValidation) {
+			int foldsNum = 10;
+			this.doCrossValidation(trainingSet, foldsNum);
+		}
 
 		this.evaluateOnValidationSet(validationSetArticles);
 	}
 
 	private void doCrossValidation(Instances trainingSet, int foldsNum) throws Exception {
 
+		// TODO: log
 		System.out.println();
 		System.out.println("Cross validation on training set");
 		System.out.println();
@@ -66,6 +74,7 @@ public class ArticleClassifier {
 
 	private void evaluateOnValidationSet(List<Article> validationSetArticles) throws Exception {
 
+		// TODO: log
 		System.out.println();
 		System.out.println("Evaluating on validation set");
 		System.out.println();
@@ -93,10 +102,10 @@ public class ArticleClassifier {
 		}
 	}
 
-	private void buildClassifier(Instances trainingSet, Classifier classifier)
-			throws Exception {
-		System.out.println();
+	private void buildClassifier(Instances trainingSet, Classifier classifier) throws Exception {
+
 		if (FILTERS != null) {
+
 			MultiFilter multiFilter = new MultiFilter();
 			multiFilter.setInputFormat(trainingSet);
 			multiFilter.setFilters(FILTERS);
@@ -104,6 +113,7 @@ public class ArticleClassifier {
 			filteredClassifier.setFilter(multiFilter);
 			filteredClassifier.setClassifier(classifier);
 			this.classifier = filteredClassifier;
+
 		} else {
 			this.classifier = classifier;
 		}

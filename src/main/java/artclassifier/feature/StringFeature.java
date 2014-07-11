@@ -59,6 +59,7 @@ public abstract class StringFeature extends Feature {
 
 		filter.setUseStoplist(true);
 
+		// TODO: ability to configure path
 		String stopwordsFilePath = "src/main/resources/stop_words/stop_words.txt";
 		filter.setStopwords(new File(stopwordsFilePath));
 

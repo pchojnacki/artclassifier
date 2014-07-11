@@ -14,7 +14,7 @@ public class Name {
 	}
 
 	static {
-		// TODO: refactor
+		// TODO: ability to configure path
 		String namesFilePath = "src/main/resources/names/names.txt";
 
 		try (BufferedReader br = new BufferedReader(new FileReader(namesFilePath))) {
