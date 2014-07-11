@@ -9,10 +9,6 @@ public class Article {
 
 	private String title;
 
-	private long pageId;
-
-	private long wikiId;
-
 	private String type;
 
 	public String getWikiText() {
@@ -29,22 +25,6 @@ public class Article {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public long getPageId() {
-		return this.pageId;
-	}
-
-	public void setPageId(long pageId) {
-		this.pageId = pageId;
-	}
-
-	public long getWikiId() {
-		return this.wikiId;
-	}
-
-	public void setWikiId(long wikiId) {
-		this.wikiId = wikiId;
 	}
 
 	public String getType() {
