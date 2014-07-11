@@ -111,31 +111,40 @@ public class ArticleClassifier {
 		this.classifier.buildClassifier(trainingSet);
 	}
 
-	private Instances createInstancesFromLabeledArticles(
-			List<Article> labeledArticles, String datasetName) {
+	private Instances createInstancesFromLabeledArticles(List<Article> labeledArticles, String datasetName) {
+
 		Instances instances = this.createEmptyInstancesSet(datasetName);
+
 		for (Article article : labeledArticles) {
 			Instance instance = this.articleToInstance(article);
 			instance.setValue(this.labelAttribute, article.getType());
 			instances.add(instance);
 		}
+
 		return instances;
 	}
 
 	private Instance articleToInstance(Article article) {
+
 		Instance instance = new Instance(ATTRIBUTES_COUNT);
+
 		for (Feature feature : FEATURES) {
 			feature.addFeature(article, instance);
 		}
+
 		return instance;
 	}
 
 	private Instances createEmptyInstancesSet(String datasetName) {
+
 		FastVector attributes = new FastVector(ATTRIBUTES_COUNT);
+
 		for (Feature feature : FEATURES) {
 			attributes.addElement(feature.getAttribute());
 		}
+
 		attributes.addElement(this.labelAttribute);
+
 		Instances instances = new Instances(datasetName, attributes, 1);
 		instances.setClass(this.labelAttribute);
 		return instances;

@@ -14,8 +14,10 @@ public class Name {
 	}
 
 	static {
-		try (BufferedReader br = new BufferedReader(
-				new FileReader("/Users/yura/workspaces/artclassifier/src/main/resources/names/names.txt"))) {
+		// TODO: refactor
+		String namesFilePath = "src/main/resources/names/names.txt";
+
+		try (BufferedReader br = new BufferedReader(new FileReader(namesFilePath))) {
 
 			String s;
 

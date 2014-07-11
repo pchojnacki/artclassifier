@@ -48,12 +48,20 @@ public abstract class StringFeature extends Feature {
 	@Override
 	public StringToWordVector getFilter() {
 		StringToWordVector filter = new StringToWordVector();
+
 		filter.setAttributeIndices("1");
+
 		filter.setStemmer(new SnowballStemmer());
+
 		filter.setTokenizer(new SpaceTokenizer());
+
 		filter.setLowerCaseTokens(true);
+
 		filter.setUseStoplist(true);
-		filter.setStopwords(new File("/Users/yura/workspaces/artclassifier/src/main/resources/stop_words/stop_words.txt"));
+
+		String stopwordsFilePath = "src/main/resources/stop_words/stop_words.txt";
+		filter.setStopwords(new File(stopwordsFilePath));
+
 		return filter;
 	}
 
