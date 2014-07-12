@@ -30,7 +30,7 @@ import weka.core.neighboursearch.KDTree;
 @SuppressWarnings("unused")
 public class Main {
 
-	private static final String LABELED_ARTICLES_JSON_FILE = "/Users/yura/workspaces/holmes/training-data/2014.01.26.json";
+	private static final String LABELED_ARTICLES_JSON_FILE = "/labeled_articles/2014.01.26.json";
 
 	public static void main(String[] args) throws Exception {
 
@@ -86,9 +86,9 @@ public class Main {
 	}
 
 	private static List<Article> readLabeledArticles() throws IOException, JsonParseException, JsonMappingException {
-		List<Article> articles = new ObjectMapper().readValue(
+        List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
-						new File(LABELED_ARTICLES_JSON_FILE)),
+						Main.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
 						new TypeReference<List<Article>>() {
 				});
 		return articles;

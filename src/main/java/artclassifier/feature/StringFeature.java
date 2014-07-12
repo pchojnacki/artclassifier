@@ -1,14 +1,15 @@
 package artclassifier.feature;
 
-import java.io.File;
-
+import artclassifier.Article;
+import artclassifier.util.SnowballStemmer;
+import artclassifier.util.SpaceTokenizer;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.filters.unsupervised.attribute.StringToWordVector;
-import artclassifier.Article;
-import artclassifier.util.SnowballStemmer;
-import artclassifier.util.SpaceTokenizer;
+
+import java.io.File;
+import java.net.URISyntaxException;
 
 public abstract class StringFeature extends Feature {
 
@@ -60,8 +61,12 @@ public abstract class StringFeature extends Feature {
 		filter.setUseStoplist(true);
 
 		// TODO: ability to configure path
-		String stopwordsFilePath = "src/main/resources/stop_words/stop_words.txt";
-		filter.setStopwords(new File(stopwordsFilePath));
+		String stopwordsFilePath = "/stop_words/stop_words.txt";
+		try {
+			filter.setStopwords(new File(this.getClass().getResource(stopwordsFilePath).toURI()));
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 
 		return filter;
 	}
