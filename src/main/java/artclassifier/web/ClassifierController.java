@@ -47,13 +47,9 @@ public class ClassifierController {
 			this.lock.unlock();
 		}
 
-		// Java 8 stuff - must be refactored
-		// List<Entry<String, Double>> resultSortedByValue =
-		// result.entrySet().stream()
-		// .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-		// .collect(Collectors.toList());
-
 		StringBuilder sb = new StringBuilder();
+
+		// TODO: use template or JSON response via Jackson
 
 		sb.append("<a href=\"").append(url).append("\">").append(url).append("</a><br/><br/>");
 
