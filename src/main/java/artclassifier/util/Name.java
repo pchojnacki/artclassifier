@@ -16,7 +16,7 @@ public class Name {
 
 	static {
 		// TODO: ability to configure path
-		String namesFilePath = "/names/names.txt";
+		String namesFilePath = "/names.txt";
 		InputStream is = Name.class.getResourceAsStream(namesFilePath);
 
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {

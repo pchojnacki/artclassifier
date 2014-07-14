@@ -1,15 +1,17 @@
 package artclassifier.feature;
 
-import artclassifier.Article;
-import artclassifier.util.SnowballStemmer;
-import artclassifier.util.SpaceTokenizer;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.filters.unsupervised.attribute.StringToWordVector;
-
-import java.io.File;
-import java.net.URISyntaxException;
+import artclassifier.Article;
+import artclassifier.util.SnowballStemmer;
+import artclassifier.util.SpaceTokenizer;
 
 public abstract class StringFeature extends Feature {
 
@@ -61,14 +63,25 @@ public abstract class StringFeature extends Feature {
 		filter.setUseStoplist(true);
 
 		// TODO: ability to configure path
-		String stopwordsFilePath = "/stop_words/stop_words.txt";
+		String stopwordsFilePath = "/stop_words.txt";
 		try {
-			filter.setStopwords(new File(this.getClass().getResource(stopwordsFilePath).toURI()));
-		} catch (URISyntaxException e) {
+			// Extracting stop words to external file, because of Weka can't
+			// read stop words from file, which included to jar archive
+			File temp = File.createTempFile("stop_words_unpacked", ".tmp");
+
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(stopwordsFilePath)));
+					PrintWriter pw = new PrintWriter(temp)) {
+				String s;
+				while ((s = br.readLine()) != null) {
+					pw.println(s);
+				}
+			}
+
+			filter.setStopwords(new File(temp.getAbsolutePath()));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return filter;
 	}
-
 }

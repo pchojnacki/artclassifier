@@ -1,1 +1,0 @@
-List of stop words taken from: http://www.ranks.nl/stopwords
