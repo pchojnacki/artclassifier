@@ -1,6 +1,5 @@
 package artclassifier;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +25,7 @@ import weka.classifiers.lazy.IBk;
 import weka.classifiers.meta.AttributeSelectedClassifier;
 import weka.classifiers.trees.J48;
 import weka.core.neighboursearch.KDTree;
+import artclassifier.wikia.WikiaArticlesExtractor;
 
 @SuppressWarnings("unused")
 public class Main {
@@ -63,10 +63,13 @@ public class Main {
 		ArticleClassifier articleClassifier =
 				new ArticleClassifier(trainingSet, validationSet, classifier, performCrossValidation);
 
-		// Just for example: classifying first 40 articles from validation set
+		// Just for example: classifying top articles from some of wikia's
 
-		for (int i = 0; i < 40; i++) {
-			Article article = validationSet.get(i);
+		WikiaArticlesExtractor wikiaApi = new WikiaArticlesExtractor("http://terminator.wikia.com");
+
+		for (String id : wikiaApi.getTopArticlesIds()) {
+			Article article = wikiaApi.getArticle(id);
+
 			articleClassifier.classifyWithDistribution(article);
 			Map<String, Double> result = articleClassifier.classifyWithDistribution(article);
 
@@ -86,7 +89,7 @@ public class Main {
 	}
 
 	private static List<Article> readLabeledArticles() throws IOException, JsonParseException, JsonMappingException {
-        List<Article> articles = new ObjectMapper().readValue(
+		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						Main.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
 						new TypeReference<List<Article>>() {
