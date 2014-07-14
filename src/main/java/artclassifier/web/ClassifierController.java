@@ -39,9 +39,10 @@ public class ClassifierController {
 	public String classify(@RequestParam String url) throws Exception {
 		Article article = WikiaArticlesExtractor.getArticleByURL(url);
 
+		List<ClassificationResult> result = null;
 		try {
 			this.lock.lock();
-			List<ClassificationResult> result = this.classifier.classifyWithDistribution(article);
+			result = this.classifier.classifyWithDistribution(article);
 		} finally {
 			this.lock.unlock();
 		}
