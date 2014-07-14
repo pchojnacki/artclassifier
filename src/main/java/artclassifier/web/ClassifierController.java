@@ -1,6 +1,7 @@
 package artclassifier.web;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 
@@ -31,12 +32,19 @@ public class ClassifierController {
 		return "Ok";
 	}
 
+	private ReentrantLock lock = new ReentrantLock();
+
 	@RequestMapping("/classify")
 	@ResponseBody
 	public String classify(@RequestParam String url) throws Exception {
 		Article article = WikiaArticlesExtractor.getArticleByURL(url);
-		this.classifier.classifyWithDistribution(article);
-		List<ClassificationResult> result = this.classifier.classifyWithDistribution(article);
+
+		try {
+			this.lock.lock();
+			List<ClassificationResult> result = this.classifier.classifyWithDistribution(article);
+		} finally {
+			this.lock.unlock();
+		}
 
 		// Java 8 stuff - must be refactored
 		// List<Entry<String, Double>> resultSortedByValue =
