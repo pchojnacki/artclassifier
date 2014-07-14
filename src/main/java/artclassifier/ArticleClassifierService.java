@@ -33,7 +33,7 @@ import artclassifier.wikia.WikiaArticlesExtractor;
 @SuppressWarnings("unused")
 public class ArticleClassifierService {
 
-	private static final String LABELED_ARTICLES_JSON_FILE = "/labeled_articles/2014.01.26.json";
+	private static final String LABELED_ARTICLES_JSON_FILE = "/2014.01.26.json";
 
 	public static void main(String[] args) throws Exception {
 
@@ -64,8 +64,8 @@ public class ArticleClassifierService {
 			// Java 8 stuff - must be refactored
 			List<Entry<String, Double>> resultSortedByValue =
 					result.entrySet().stream()
-					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-					.collect(Collectors.toList());
+							.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+							.collect(Collectors.toList());
 
 			for (Entry<String, Double> entry : resultSortedByValue) {
 				System.out.printf("%.3f\t%s\n", entry.getValue(), entry.getKey());
@@ -110,7 +110,7 @@ public class ArticleClassifierService {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
-						new TypeReference<List<Article>>() {
+				new TypeReference<List<Article>>() {
 				});
 		return articles;
 	}
