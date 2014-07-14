@@ -69,7 +69,7 @@ public abstract class StringFeature extends Feature {
 			// read stop words from file, which included to jar archive
 			File temp = File.createTempFile("stop_words_unpacked", ".tmp");
 
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(stopwordsFilePath)));
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(stopwordsFilePath), "UTF-8"));
 					PrintWriter pw = new PrintWriter(temp)) {
 				String s;
 				while ((s = br.readLine()) != null) {

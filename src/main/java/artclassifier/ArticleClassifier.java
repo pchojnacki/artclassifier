@@ -1,10 +1,9 @@
 package artclassifier;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -60,31 +59,37 @@ public class ArticleClassifier {
 			this.doCrossValidation(trainingSet, foldsNum);
 		}
 
-		this.evaluateOnValidationSet(validationSetArticles);
+		if (validationSetArticles != null) {
+			this.evaluateOnValidationSet(validationSetArticles);
+		}
 	}
 
-	public Map<String, Double> classifyWithDistribution(Article article) throws Exception {
+	public List<ClassificationResult> classifyWithDistribution(Article article) throws Exception {
 		Instances classificationSet = this.createEmptyInstancesSet("classificationSet");
 		Instance instance = this.articleToInstance(article);
 		instance.setDataset(classificationSet);
 
 		double[] distribution = this.classifier.distributionForInstance(instance);
 
-		Map<String, Double> result = new HashMap<>();
+		List<ClassificationResult> result = new ArrayList<>();
 		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
 			String label = this.labelAttribute.value(i);
-			result.put(label, distribution[i]);
+			result.add(new ClassificationResult(label, distribution[i]));
 		}
+
+		Collections.sort(result);
+		Collections.reverse(result);
 
 		return result;
 	}
 
 	public String calssifySingleChoise(Article article) throws Exception {
-		Map<String, Double> distribution = this.classifyWithDistribution(article);
+		List<ClassificationResult> distribution = this.classifyWithDistribution(article);
 		String bestLabel = null;
 		double bestProbability = 0;
-		for (String label : distribution.keySet()) {
-			double probability = distribution.get(label);
+		for (ClassificationResult cr : distribution) {
+			String label = cr.label;
+			double probability = cr.relevance;
 			if ((bestLabel == null) || (bestProbability < probability)) {
 				bestLabel = label;
 				bestProbability = probability;
@@ -315,5 +320,23 @@ public class ArticleClassifier {
 					}
 				},
 		};
+	}
+
+	// TODO: this is temp class
+	public static class ClassificationResult implements Comparable<ClassificationResult> {
+
+		public final String label;
+
+		public final double relevance;
+
+		public ClassificationResult(String label, double relevance) {
+			this.label = label;
+			this.relevance = relevance;
+		}
+
+		@Override
+		public int compareTo(ClassificationResult o) {
+			return Double.compare(this.relevance, o.relevance);
+		}
 	}
 }
