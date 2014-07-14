@@ -1,6 +1,8 @@
 package artclassifier;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -63,12 +65,22 @@ public class Main {
 		ArticleClassifier articleClassifier =
 				new ArticleClassifier(trainingSet, validationSet, classifier, performCrossValidation);
 
-		// Just for example: classifying top articles from some of wikia's
+		// Just for example: classifying articles for any given Wikia url
 
-		WikiaArticlesExtractor wikiaApi = new WikiaArticlesExtractor("http://terminator.wikia.com");
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String url;
+		while (((url = br.readLine()) != null) && !url.equals("stop")) {
+			if (url.isEmpty()) {
+				continue;
+			}
 
-		for (String id : wikiaApi.getTopArticlesIds()) {
-			Article article = wikiaApi.getArticle(id);
+			Article article = null;
+			try {
+				article = WikiaArticlesExtractor.getArticleByURL(url);
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
 
 			articleClassifier.classifyWithDistribution(article);
 			Map<String, Double> result = articleClassifier.classifyWithDistribution(article);
@@ -78,8 +90,8 @@ public class Main {
 			// Java 8 stuff - must be refactored
 			List<Entry<String, Double>> resultSortedByValue =
 					result.entrySet().stream()
-					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-					.collect(Collectors.toList());
+							.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+							.collect(Collectors.toList());
 
 			for (Entry<String, Double> entry : resultSortedByValue) {
 				System.out.printf("%.3f\t%s\n", entry.getValue(), entry.getKey());
@@ -92,7 +104,7 @@ public class Main {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						Main.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
-						new TypeReference<List<Article>>() {
+				new TypeReference<List<Article>>() {
 				});
 		return articles;
 	}

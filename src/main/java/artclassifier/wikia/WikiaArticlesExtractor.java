@@ -1,6 +1,8 @@
 package artclassifier.wikia;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,4 +48,30 @@ public class WikiaArticlesExtractor {
 		return article;
 	}
 
+	public static Article getArticleByURL(String url) throws Exception {
+		String articleId = null;
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new URL(url).openStream()))) {
+			StringBuilder pageBuilder = new StringBuilder();
+			String s;
+			while ((s = br.readLine()) != null) {
+				pageBuilder.append(s);
+			}
+			String page = pageBuilder.toString();
+			articleId = page.replaceAll("^.*wgArticleId\\s*=\\s*([^\\s,]+).*$", "$1");
+		}
+		String wikiaUrl = url.replaceAll("^(http://[^\\.]+\\.wikia\\.com).*", "$1");
+
+		// log
+		// TODO: remove
+		System.out.println("wikia url is " + wikiaUrl);
+		System.out.println("article id is " + articleId);
+		System.out.println();
+
+		if (articleId == null) {
+			// TODO
+			throw new RuntimeException();
+		}
+
+		return new WikiaArticlesExtractor(wikiaUrl).getArticle(articleId);
+	}
 }

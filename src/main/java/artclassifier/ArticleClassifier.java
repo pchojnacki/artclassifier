@@ -270,7 +270,7 @@ public class ArticleClassifier {
 					protected double calculate(Article article) {
 						String title = article.getTitle();
 						int occurences =
-								this.countRegrexp(title, "[^s]{3,}");
+								this.countRegrexp(title, "[^\\s]{3,}");
 						return occurences;
 					}
 				},
