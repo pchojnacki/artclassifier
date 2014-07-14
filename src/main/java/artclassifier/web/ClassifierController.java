@@ -44,8 +44,8 @@ public class ClassifierController {
 		// Java 8 stuff - must be refactored
 		List<Entry<String, Double>> resultSortedByValue =
 				result.entrySet().stream()
-				.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-				.collect(Collectors.toList());
+						.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+						.collect(Collectors.toList());
 
 		StringBuilder sb = new StringBuilder();
 
@@ -53,9 +53,12 @@ public class ClassifierController {
 
 		int i = 0;
 		for (Entry<String, Double> entry : resultSortedByValue) {
-			sb.append(entry.getKey()).append("<br/>");
 			if (i == 0) {
-				sb.append("</br>");
+				sb.append("Classified as article about: ");
+				sb.append(entry.getKey()).append("<br/>");
+				sb.append("</br>Other classes, sorted by relevance for this article<br/>");
+			} else {
+				sb.append(i).append(". ").append(entry.getKey()).append("<br/>");
 			}
 			i++;
 		}
