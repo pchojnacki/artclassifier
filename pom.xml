@@ -12,7 +12,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java-version>1.8</java-version>
+		<java-version>1.7</java-version>
 		<jetty.version>8.1.5.v20120716</jetty.version>
 		<jetty.jsp.version>8.1.4.v20120524</jetty.jsp.version>
 		<spring.version>3.1.2.RELEASE</spring.version>

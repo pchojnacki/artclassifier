@@ -1,10 +1,7 @@
 package artclassifier.web;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -42,17 +39,17 @@ public class ClassifierController {
 		Map<String, Double> result = this.classifier.classifyWithDistribution(article);
 
 		// Java 8 stuff - must be refactored
-		List<Entry<String, Double>> resultSortedByValue =
-				result.entrySet().stream()
-						.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-						.collect(Collectors.toList());
+		// List<Entry<String, Double>> resultSortedByValue =
+		// result.entrySet().stream()
+		// .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+		// .collect(Collectors.toList());
 
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("<a href=\"").append(url).append("\">").append(url).append("</a><br/><br/>");
 
 		int i = 0;
-		for (Entry<String, Double> entry : resultSortedByValue) {
+		for (Entry<String, Double> entry : result.entrySet()) {
 			if (i == 0) {
 				sb.append("Classified as article about: ");
 				sb.append(entry.getKey()).append("<br/>");

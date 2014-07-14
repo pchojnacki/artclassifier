@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
@@ -62,12 +61,12 @@ public class ArticleClassifierService {
 			System.out.println(article.getTitle());
 
 			// Java 8 stuff - must be refactored
-			List<Entry<String, Double>> resultSortedByValue =
-					result.entrySet().stream()
-							.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-							.collect(Collectors.toList());
+			// List<Entry<String, Double>> resultSortedByValue =
+			// result.entrySet().stream()
+			// .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+			// .collect(Collectors.toList());
 
-			for (Entry<String, Double> entry : resultSortedByValue) {
+			for (Entry<String, Double> entry : result.entrySet()) {
 				System.out.printf("%.3f\t%s\n", entry.getValue(), entry.getKey());
 			}
 			System.out.println();

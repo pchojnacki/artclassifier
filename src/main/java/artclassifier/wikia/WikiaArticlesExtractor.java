@@ -27,7 +27,9 @@ public class WikiaArticlesExtractor {
 
 			JsonNode response = new ObjectMapper().readValue(in, JsonNode.class);
 			JsonNode items = response.get("items");
-			items.forEach(item -> ids.add(item.get("id").asText()));
+			for (JsonNode item : items) {
+				ids.add(item.get("id").asText());
+			}
 		}
 		return ids;
 	}
