@@ -59,12 +59,6 @@ public class ArticleClassifierService {
 
 			System.out.println(article.getTitle());
 
-			// Java 8 stuff - must be refactored
-			// List<Entry<String, Double>> resultSortedByValue =
-			// result.entrySet().stream()
-			// .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-			// .collect(Collectors.toList());
-
 			for (ClassificationResult entry : result) {
 				System.out.printf("%.3f\t%s\n", entry.relevance, entry.label);
 			}
@@ -100,7 +94,6 @@ public class ArticleClassifierService {
 
 		ArticleClassifier articleClassifier = null;
 		if (splitForValidationSet) {
-			// Learn classifier of articles
 			articleClassifier = new ArticleClassifier(trainingSet, validationSet, classifier, performCrossValidation);
 		} else {
 			articleClassifier = new ArticleClassifier(labeledArticles, null, classifier, performCrossValidation);
@@ -112,7 +105,7 @@ public class ArticleClassifierService {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
-						new TypeReference<List<Article>>() {
+				new TypeReference<List<Article>>() {
 				});
 		return articles;
 	}
