@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.meta.FilteredClassifier;
@@ -27,6 +29,8 @@ import artclassifier.util.Name;
 
 public class ArticleClassifier {
 
+	private static final Logger log = Logger.getLogger(ArticleClassifier.class);
+
 	private static final Feature[] FEATURES = getFeatures();
 
 	private static final Filter[] FILTERS = getFilters();
@@ -46,22 +50,12 @@ public class ArticleClassifier {
 
 		this.labelAttribute = this.createLabelAttribute(trainingSetArticles);
 
-		Instances trainingSet = this.createInstancesFromLabeledArticles(
-				trainingSetArticles, "trainingSet");
+		Instances trainingSet = this.createInstancesFromLabeledArticles(trainingSetArticles, "trainingSet");
 
 		this.buildClassifier(trainingSet, classifier);
 
-		// TODO: log
-		System.out.println(this.classifier);
-
-		if (performCrossValidation) {
-			int foldsNum = 10;
-			this.doCrossValidation(trainingSet, foldsNum);
-		}
-
-		if (validationSetArticles != null) {
-			this.evaluateOnValidationSet(validationSetArticles);
-		}
+		String report = this.generateReport(trainingSetArticles, validationSetArticles, performCrossValidation);
+		log.info(report);
 	}
 
 	public List<ClassificationResult> classifyWithDistribution(Article article) throws Exception {
@@ -81,63 +75,6 @@ public class ArticleClassifier {
 		Collections.reverse(result);
 
 		return result;
-	}
-
-	public String calssifySingleChoise(Article article) throws Exception {
-		List<ClassificationResult> distribution = this.classifyWithDistribution(article);
-		String bestLabel = null;
-		double bestProbability = 0;
-		for (ClassificationResult cr : distribution) {
-			String label = cr.label;
-			double probability = cr.relevance;
-			if ((bestLabel == null) || (bestProbability < probability)) {
-				bestLabel = label;
-				bestProbability = probability;
-			}
-		}
-		return bestLabel;
-	}
-
-	private void doCrossValidation(Instances trainingSet, int foldsNum) throws Exception {
-
-		// TODO: log
-		System.out.println();
-		System.out.println("Cross validation on training set");
-		System.out.println();
-
-		Evaluation cvEaluation = new Evaluation(trainingSet);
-		cvEaluation.crossValidateModel(this.classifier, trainingSet, foldsNum, new Random(1));
-		System.out.println(cvEaluation.toSummaryString());
-	}
-
-	private void evaluateOnValidationSet(List<Article> validationSetArticles) throws Exception {
-
-		// TODO: log
-		System.out.println();
-		System.out.println("Evaluating on validation set");
-		System.out.println();
-
-		Instances validationSet = this.createInstancesFromLabeledArticles(
-				validationSetArticles, "validationSet");
-
-		Evaluation eval = new Evaluation(validationSet);
-		eval.evaluateModel(this.classifier, validationSet);
-		System.out.println(eval.toSummaryString());
-		System.out.println(eval.toMatrixString());
-
-		System.out.println();
-		System.out.println("FP\tFN\tF-score\tRecall\tPrecision\tLabel");
-		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
-			String label = this.labelAttribute.value(i);
-
-			System.out.printf("%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n",
-					eval.falsePositiveRate(i),
-					eval.falseNegativeRate(i),
-					eval.fMeasure(i),
-					eval.recall(i),
-					eval.precision(i),
-					label);
-		}
 	}
 
 	private void buildClassifier(Instances trainingSet, Classifier classifier) throws Exception {
@@ -208,8 +145,57 @@ public class ArticleClassifier {
 		for (String label : labels) {
 			labelsVector.addElement(label);
 		}
+
 		Attribute attr = new Attribute("tagAttribute", labelsVector);
 		return attr;
+	}
+
+	private String generateReport(List<Article> trainingSetArticles, List<Article> validationSetArticles, boolean performCrossValidation) throws Exception {
+		StringBuilder reportBuilder = new StringBuilder().append("\n");
+		reportBuilder.append(this.classifier).append("\n");
+
+		if (performCrossValidation) {
+			int foldsNum = 10;
+			Instances trainingSet = this.createInstancesFromLabeledArticles(trainingSetArticles, "trainingSet");
+			this.doCrossValidation(trainingSet, foldsNum, reportBuilder);
+		}
+
+		if (validationSetArticles != null) {
+			this.evaluateOnValidationSet(validationSetArticles, reportBuilder);
+		}
+
+		String report = reportBuilder.toString();
+		return report;
+	}
+
+	private void doCrossValidation(Instances trainingSet, int foldsNum, StringBuilder reportBuilder) throws Exception {
+		Evaluation cvEaluation = new Evaluation(trainingSet);
+		cvEaluation.crossValidateModel(this.classifier, trainingSet, foldsNum, new Random(1));
+		reportBuilder.append(cvEaluation.toSummaryString()).append("\n");
+	}
+
+	private void evaluateOnValidationSet(List<Article> validationSetArticles, StringBuilder reportBuilder) throws Exception {
+
+		Instances validationSet = this.createInstancesFromLabeledArticles(validationSetArticles, "validationSet");
+
+		Evaluation eval = new Evaluation(validationSet);
+		eval.evaluateModel(this.classifier, validationSet);
+
+		reportBuilder.append(eval.toSummaryString()).append("\n");
+		reportBuilder.append(eval.toMatrixString()).append("\n");
+
+		reportBuilder.append("FP\tFN\tF-score\tRecall\tPrecision\tLabel").append("\n");
+		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
+			String label = this.labelAttribute.value(i);
+
+			reportBuilder.append(String.format("%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n",
+					eval.falsePositiveRate(i),
+					eval.falseNegativeRate(i),
+					eval.fMeasure(i),
+					eval.recall(i),
+					eval.precision(i),
+					label));
+		}
 	}
 
 	private static Filter[] getFilters() {
