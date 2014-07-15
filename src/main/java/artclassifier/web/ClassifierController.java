@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import artclassifier.Article;
-import artclassifier.ArticleClassifier;
-import artclassifier.ArticleClassifier.ClassificationResult;
-import artclassifier.ArticleClassifierService;
+import artclassifier.algorithm.Article;
+import artclassifier.algorithm.ArticleClassifier;
+import artclassifier.algorithm.ArticleClassifierService;
+import artclassifier.algorithm.ClassificationResult;
 import artclassifier.wikia.WikiaArticlesExtractor;
 
 @Controller
@@ -58,13 +58,13 @@ public class ClassifierController {
 		for (ClassificationResult entry : result) {
 			if (i == 0) {
 				sb.append("Article is about: <b>");
-				sb.append(entry.label).append("</b><br/>");
+				sb.append(entry.getLabel()).append("</b><br/>");
 				sb.append("</br>Other classes, sorted by relevance for this article<br/><br/>");
 			} else {
-				if ("other".equals(entry.label)) {
+				if ("other".equals(entry.getLabel())) {
 					sb.append("<hr/>");
 				}
-				sb.append(i).append(". ").append(entry.label).append("<br/>");
+				sb.append(i).append(". ").append(entry.getLabel()).append("<br/>");
 			}
 			i++;
 		}

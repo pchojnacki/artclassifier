@@ -1,4 +1,4 @@
-package artclassifier;
+package artclassifier.algorithm;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 

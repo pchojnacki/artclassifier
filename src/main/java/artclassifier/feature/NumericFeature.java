@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.filters.Filter;
-import artclassifier.Article;
+import artclassifier.algorithm.Article;
 
 public abstract class NumericFeature extends Feature {
 

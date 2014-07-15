@@ -9,7 +9,7 @@ import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.filters.unsupervised.attribute.StringToWordVector;
-import artclassifier.Article;
+import artclassifier.algorithm.Article;
 import artclassifier.util.SnowballStemmer;
 import artclassifier.util.SpaceTokenizer;
 

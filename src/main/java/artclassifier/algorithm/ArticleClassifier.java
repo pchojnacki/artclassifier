@@ -1,4 +1,4 @@
-package artclassifier;
+package artclassifier.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -320,23 +320,5 @@ public class ArticleClassifier {
 					}
 				},
 		};
-	}
-
-	// TODO: this is temp class
-	public static class ClassificationResult implements Comparable<ClassificationResult> {
-
-		public final String label;
-
-		public final double relevance;
-
-		public ClassificationResult(String label, double relevance) {
-			this.label = label;
-			this.relevance = relevance;
-		}
-
-		@Override
-		public int compareTo(ClassificationResult o) {
-			return Double.compare(this.relevance, o.relevance);
-		}
 	}
 }

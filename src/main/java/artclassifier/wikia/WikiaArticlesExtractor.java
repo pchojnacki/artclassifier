@@ -10,7 +10,7 @@ import java.util.List;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import artclassifier.Article;
+import artclassifier.algorithm.Article;
 
 public class WikiaArticlesExtractor {
 
