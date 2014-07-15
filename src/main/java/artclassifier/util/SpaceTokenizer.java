@@ -4,6 +4,8 @@ import weka.core.tokenizers.Tokenizer;
 
 public class SpaceTokenizer extends Tokenizer {
 
+	private static final String SPACES = "\\s+";
+
 	private static final long serialVersionUID = 1L;
 
 	private String[] tokens;
@@ -12,7 +14,7 @@ public class SpaceTokenizer extends Tokenizer {
 
 	@Override
 	public void tokenize(String s) {
-		this.tokens = s.split("\\s+");
+		this.tokens = s.split(SPACES);
 		this.position = 0;
 	}
 

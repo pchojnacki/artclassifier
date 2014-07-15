@@ -12,10 +12,11 @@
 		defined in your web-context because it is a sub-context. Beans defined in 
 		the web-context will not be available in the application context. -->
 	
- 	<context:component-scan base-package="artclassifier.web" >
+ 	<context:component-scan base-package="artclassifier" >
 		<context:exclude-filter type="annotation" 
 			expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
+	
 	<context:annotation-config/>	
 	
 	<bean

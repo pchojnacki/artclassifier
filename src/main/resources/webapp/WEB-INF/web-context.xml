@@ -9,7 +9,7 @@
 
 	<!-- Scans the classpath of the application for @Components to deploy as 
 		beans -->
-	<context:component-scan base-package="artclassifier.web" />
+	<context:component-scan base-package="artclassifier.service" />
 
 	<!-- Configure to plugin JSON as request and response in method handler -->
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">

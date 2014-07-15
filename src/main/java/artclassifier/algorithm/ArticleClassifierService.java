@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import org.codehaus.jackson.JsonFactory;
@@ -24,7 +26,7 @@ import weka.classifiers.lazy.IBk;
 import weka.classifiers.meta.AttributeSelectedClassifier;
 import weka.classifiers.trees.J48;
 import weka.core.neighboursearch.KDTree;
-import artclassifier.wikia.WikiaArticlesExtractor;
+import artclassifier.util.WikiaArticlesDownloader;
 
 //TODO refactor
 @SuppressWarnings("unused")
@@ -47,19 +49,19 @@ public class ArticleClassifierService {
 
 			Article article = null;
 			try {
-				article = WikiaArticlesExtractor.getArticleByURL(url);
+				article = WikiaArticlesDownloader.getArticleByURL(url);
 			} catch (Exception e) {
 				e.printStackTrace();
 				continue;
 			}
 
 			articleClassifier.classifyWithDistribution(article);
-			List<ClassificationResult> result = articleClassifier.classifyWithDistribution(article);
+			Map<String, Double> result = articleClassifier.classifyWithDistribution(article);
 
 			System.out.println(article.getTitle());
 
-			for (ClassificationResult entry : result) {
-				System.out.printf("%.3f\t%s\n", entry.getRelevance(), entry.getLabel());
+			for (Entry<String, Double> entry : result.entrySet()) {
+				System.out.printf("%.3f\t%s\n", entry.getValue(), entry.getKey());
 			}
 			System.out.println();
 		}
@@ -104,7 +106,7 @@ public class ArticleClassifierService {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
-						new TypeReference<List<Article>>() {
+				new TypeReference<List<Article>>() {
 				});
 		return articles;
 	}

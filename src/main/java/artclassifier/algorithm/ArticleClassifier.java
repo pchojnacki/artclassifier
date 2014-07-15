@@ -1,9 +1,10 @@
 package artclassifier.algorithm;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -58,21 +59,18 @@ public class ArticleClassifier {
 		log.info(report);
 	}
 
-	public List<ClassificationResult> classifyWithDistribution(Article article) throws Exception {
+	public Map<String, Double> classifyWithDistribution(Article article) throws Exception {
 		Instances classificationSet = this.createEmptyInstancesSet("classificationSet");
 		Instance instance = this.articleToInstance(article);
 		instance.setDataset(classificationSet);
 
 		double[] distribution = this.classifier.distributionForInstance(instance);
 
-		List<ClassificationResult> result = new ArrayList<>();
+		Map<String, Double> result = new LinkedHashMap<>();
 		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
 			String label = this.labelAttribute.value(i);
-			result.add(new ClassificationResult(label, distribution[i]));
+			result.put(label, distribution[i]);
 		}
-
-		Collections.sort(result);
-		Collections.reverse(result);
 
 		return result;
 	}

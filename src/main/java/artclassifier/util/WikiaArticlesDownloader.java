@@ -1,4 +1,4 @@
-package artclassifier.wikia;
+package artclassifier.util;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,11 +12,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import artclassifier.algorithm.Article;
 
-public class WikiaArticlesExtractor {
+public class WikiaArticlesDownloader {
 
 	private String wikiaUrl;
 
-	public WikiaArticlesExtractor(String wikiaUrl) {
+	public WikiaArticlesDownloader(String wikiaUrl) {
 		this.wikiaUrl = wikiaUrl;
 	}
 
@@ -74,6 +74,6 @@ public class WikiaArticlesExtractor {
 			throw new RuntimeException();
 		}
 
-		return new WikiaArticlesExtractor(wikiaUrl).getArticle(articleId);
+		return new WikiaArticlesDownloader(wikiaUrl).getArticle(articleId);
 	}
 }
