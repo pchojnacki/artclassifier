@@ -19,11 +19,14 @@ import artclassifier.wikia.WikiaArticlesExtractor;
 @Controller
 public class ClassifierController {
 
+	private ReentrantLock classifierLock = new ReentrantLock();
+
 	private ArticleClassifier classifier;
 
 	@PostConstruct
 	public void init() throws Exception {
-		this.classifier = ArticleClassifierService.getArticleClassifier(false);
+		this.classifier =
+				ArticleClassifierService.getArticleClassifier(false);
 	}
 
 	@RequestMapping("/ping")
@@ -32,8 +35,6 @@ public class ClassifierController {
 		return "Ok";
 	}
 
-	private ReentrantLock lock = new ReentrantLock();
-
 	@RequestMapping("/classify")
 	@ResponseBody
 	public String classify(@RequestParam String url) throws Exception {
@@ -41,10 +42,10 @@ public class ClassifierController {
 
 		List<ClassificationResult> result = null;
 		try {
-			this.lock.lock();
+			this.classifierLock.lock();
 			result = this.classifier.classifyWithDistribution(article);
 		} finally {
-			this.lock.unlock();
+			this.classifierLock.unlock();
 		}
 
 		// Java 8 stuff - must be refactored
