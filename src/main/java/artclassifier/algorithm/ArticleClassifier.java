@@ -231,7 +231,7 @@ public class ArticleClassifier {
 						filter.setAttributeNamePrefix("body_");
 						filter.setTFTransform(true);
 						filter.setIDFTransform(true);
-						filter.setMinTermFreq(5);
+						// filter.setMinTermFreq(5);
 						return filter;
 					}
 				},

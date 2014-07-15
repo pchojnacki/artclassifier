@@ -89,7 +89,7 @@ public class ArticleClassifierService {
 
 		// Classifier, which measures informativeness of attributes, and taking
 		// into account only 300 most informative
-		classifier = getAttributeSelectionClassifier(getSVM(), new InfoGainAttributeEval(), 300);
+		classifier = getAttributeSelectionClassifier(getSVM(), new InfoGainAttributeEval(), 500);
 
 		boolean performCrossValidation = false;
 
