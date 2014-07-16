@@ -2,6 +2,7 @@ package artclassifier.feature;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -12,11 +13,22 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 import artclassifier.algorithm.Article;
 import artclassifier.util.SnowballStemmer;
 import artclassifier.util.SpaceTokenizer;
+import de.abelssoft.wordtools.jwordsplitter.AbstractWordSplitter;
+import de.abelssoft.wordtools.jwordsplitter.impl.GermanWordSplitter;
 
 public abstract class StringFeature extends Feature {
 
+	private AbstractWordSplitter splitter;
+
 	public StringFeature(String featureName) {
 		super(featureName);
+		try {
+			this.splitter = new GermanWordSplitter(true);
+			this.splitter.setStrictMode(true);
+		} catch (IOException e) {
+			// TODO
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -46,6 +58,20 @@ public abstract class StringFeature extends Feature {
 
 	protected String removeNonCharacters(String s) {
 		return s.replaceAll("\\P{L}+", " ");
+	}
+
+	protected String splitGermanWords(String s) {
+		String[] words = s.split("\\s+");
+		StringBuilder sb = new StringBuilder();
+		for (String word : words) {
+			sb.append(word).append(" ");
+			for (String part : this.splitter.splitWord(word)) {
+				if (!part.equals(word)) {
+					sb.append(part).append(" ");
+				}
+			}
+		}
+		return sb.toString();
 	}
 
 	@Override

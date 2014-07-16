@@ -222,6 +222,7 @@ public class ArticleClassifier {
 						wikiText = super.replaceYears(wikiText);
 						wikiText = super.replaceNumbers(wikiText);
 						wikiText = super.removeNonCharacters(wikiText);
+						wikiText = super.splitGermanWords(wikiText);
 						return wikiText;
 					}
 
