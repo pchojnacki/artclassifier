@@ -89,7 +89,7 @@ public class ArticleClassifierService {
 
 		// Classifier, which measures informativeness of attributes, and taking
 		// into account only 300 most informative
-		classifier = getAttributeSelectionClassifier(getSVM(), new InfoGainAttributeEval(), 500);
+		classifier = getAttributeSelectionClassifier(getSVM(), new InfoGainAttributeEval(), 300);
 
 		boolean performCrossValidation = false;
 
@@ -106,7 +106,7 @@ public class ArticleClassifierService {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
-						new TypeReference<List<Article>>() {
+				new TypeReference<List<Article>>() {
 				});
 		return articles;
 	}

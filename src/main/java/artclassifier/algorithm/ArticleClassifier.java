@@ -24,6 +24,7 @@ import artclassifier.feature.Feature;
 import artclassifier.feature.NumericFeature;
 import artclassifier.feature.StringFeature;
 import artclassifier.util.Name;
+import artclassifier.wikitext.WikiPageCategory;
 
 // TODO: consider usage of wiki markup parsing stuff - for creating better features
 // https://code.google.com/p/gwtwiki/wiki/Mediawiki2HTML
@@ -215,10 +216,10 @@ public class ArticleClassifier {
 
 		return new Feature[] {
 
-				new StringFeature("wikitext") {
+				new StringFeature("plain") {
 					@Override
 					protected String calculate(Article article) {
-						String wikiText = article.getWikiText();
+						String wikiText = article.getWikiPageFeatures().getPlain();
 						wikiText = super.replaceYears(wikiText);
 						wikiText = super.replaceNumbers(wikiText);
 						wikiText = super.removeNonCharacters(wikiText);
@@ -229,7 +230,7 @@ public class ArticleClassifier {
 					@Override
 					public StringToWordVector getFilter() {
 						StringToWordVector filter = super.getFilter();
-						filter.setAttributeNamePrefix("body_");
+						filter.setAttributeNamePrefix("plain_");
 						filter.setTFTransform(true);
 						filter.setIDFTransform(true);
 						return filter;
@@ -239,7 +240,7 @@ public class ArticleClassifier {
 				new StringFeature("title") {
 					@Override
 					protected String calculate(Article article) {
-						String title = article.getTitle();
+						String title = article.getWikiPageFeatures().getTitle();
 						title = super.replaceYears(title);
 						title = super.replaceNumbers(title);
 						title = super.removeNonCharacters(title);
@@ -254,10 +255,28 @@ public class ArticleClassifier {
 					}
 				},
 
+				new StringFeature("category") {
+					@Override
+					protected String calculate(Article article) {
+						StringBuilder sb = new StringBuilder();
+						for (WikiPageCategory category : article.getWikiPageFeatures().getCategories()) {
+							sb.append(category.getTitle()).append(" ");
+						}
+						return sb.toString();
+					}
+
+					@Override
+					public StringToWordVector getFilter() {
+						StringToWordVector filter = super.getFilter();
+						filter.setAttributeNamePrefix("category_");
+						return filter;
+					}
+				},
+
 				new NumericFeature("title_words_count") {
 					@Override
 					protected double calculate(Article article) {
-						String title = article.getTitle();
+						String title = article.getWikiPageFeatures().getTitle();
 						int occurences =
 								this.countRegrexp(title, "[^\\s]{3,}");
 						return occurences;
@@ -267,7 +286,7 @@ public class ArticleClassifier {
 				new NumericFeature("title_names_count") {
 					@Override
 					protected double calculate(Article article) {
-						String title = article.getTitle();
+						String title = article.getWikiPageFeatures().getTitle();
 						String[] parts = title.split("\\P{L}+");
 						int count = 0;
 						for (String p : parts) {
@@ -282,7 +301,7 @@ public class ArticleClassifier {
 				new NumericFeature("wikitext_names_count") {
 					@Override
 					protected double calculate(Article article) {
-						String wikiText = article.getWikiText();
+						String wikiText = article.getWikiPageFeatures().getPlain();
 						String[] parts = wikiText.split("\\P{L}+");
 						int count = 0;
 						for (String p : parts) {
