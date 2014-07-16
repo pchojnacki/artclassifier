@@ -19,7 +19,7 @@ public class Name {
 	}
 
 	static {
-		String namesFilePath = "/names.txt";
+		String namesFilePath = "/lang/names.txt";
 		InputStream is = Name.class.getResourceAsStream(namesFilePath);
 
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"))) {

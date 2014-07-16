@@ -32,7 +32,7 @@ import artclassifier.util.WikiaArticlesDownloader;
 @SuppressWarnings("unused")
 public class ArticleClassifierService {
 
-	private static final String LABELED_ARTICLES_JSON_FILE = "/2014.01.26.json";
+	private static final String LABELED_ARTICLES_JSON_FILE = "/training_set/2014.01.26.json";
 
 	public static void main(String[] args) throws Exception {
 
@@ -106,7 +106,7 @@ public class ArticleClassifierService {
 		List<Article> articles = new ObjectMapper().readValue(
 				new JsonFactory().createJsonParser(
 						ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
-				new TypeReference<List<Article>>() {
+						new TypeReference<List<Article>>() {
 				});
 		return articles;
 	}
