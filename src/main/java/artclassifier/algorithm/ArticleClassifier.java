@@ -232,6 +232,7 @@ public class ArticleClassifier {
 						filter.setAttributeNamePrefix("plain_");
 						filter.setTFTransform(true);
 						filter.setIDFTransform(true);
+						filter.setMinTermFreq(5);
 						return filter;
 					}
 				},
@@ -321,11 +322,11 @@ public class ArticleClassifier {
 					}
 				},
 
-				new NumericFeature("wikitext_names_count") {
+				new NumericFeature("summary_names_count") {
 					@Override
 					protected double calculate(Article article) {
-						String wikiText = article.getWikiPageFeatures().getPlain();
-						String[] parts = wikiText.split("\\P{L}+");
+						String summary = article.getWikiPageFeatures().getSummary();
+						String[] parts = summary.split("\\P{L}+");
 						int count = 0;
 						for (String p : parts) {
 							if (Name.isName(p)) {
