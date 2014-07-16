@@ -215,7 +215,7 @@ public class ArticleClassifier {
 
 		return new Feature[] {
 
-				new StringFeature("wikiTextCleaned") {
+				new StringFeature("wikitext") {
 					@Override
 					protected String calculate(Article article) {
 						String wikiText = article.getWikiText();
@@ -232,12 +232,11 @@ public class ArticleClassifier {
 						filter.setAttributeNamePrefix("body_");
 						filter.setTFTransform(true);
 						filter.setIDFTransform(true);
-						// filter.setMinTermFreq(5);
 						return filter;
 					}
 				},
 
-				new StringFeature("titleTextCleaned") {
+				new StringFeature("title") {
 					@Override
 					protected String calculate(Article article) {
 						String title = article.getTitle();
@@ -255,7 +254,7 @@ public class ArticleClassifier {
 					}
 				},
 
-				new NumericFeature("numberOfWordsInTitle") {
+				new NumericFeature("title_words_count") {
 					@Override
 					protected double calculate(Article article) {
 						String title = article.getTitle();
@@ -265,17 +264,7 @@ public class ArticleClassifier {
 					}
 				},
 
-				new NumericFeature("numberOfYearsInWikiText") {
-					@Override
-					protected double calculate(Article article) {
-						String wikiText = article.getWikiText();
-						int occurences =
-								this.countRegrexp(wikiText, "(19|20)\\d{2}");
-						return occurences;
-					}
-				},
-
-				new NumericFeature("numberOfNamesInTitle") {
+				new NumericFeature("title_names_count") {
 					@Override
 					protected double calculate(Article article) {
 						String title = article.getTitle();
@@ -290,7 +279,7 @@ public class ArticleClassifier {
 					}
 				},
 
-				new NumericFeature("numberOfNamesInWikiText") {
+				new NumericFeature("wikitext_names_count") {
 					@Override
 					protected double calculate(Article article) {
 						String wikiText = article.getWikiText();
