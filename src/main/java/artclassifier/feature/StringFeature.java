@@ -80,7 +80,7 @@ public abstract class StringFeature extends Feature {
 
 		filter.setAttributeIndices("1");
 
-		filter.setStemmer(new SnowballStemmer());
+		filter.setStemmer(new SnowballStemmer("english"));
 
 		filter.setTokenizer(new WordTokenizer());
 
