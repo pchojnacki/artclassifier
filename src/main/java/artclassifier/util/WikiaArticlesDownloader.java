@@ -61,7 +61,7 @@ public class WikiaArticlesDownloader {
 			String page = pageBuilder.toString();
 			articleId = page.replaceAll("^.*wgArticleId\\s*=\\s*([^\\s,]+).*$", "$1");
 		}
-		String wikiaUrl = url.replaceAll("^(http://[^\\.]+\\.wikia\\.com).*", "$1");
+		String wikiaUrl = url.replaceAll("^(http://.*wikia\\.com).*", "$1");
 
 		// log
 		// TODO: remove
