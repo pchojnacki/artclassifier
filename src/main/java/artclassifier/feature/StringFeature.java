@@ -2,9 +2,11 @@ package artclassifier.feature;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -88,26 +90,30 @@ public abstract class StringFeature extends Feature {
 
 		filter.setUseStoplist(true);
 
-		// TODO: ability to configure path
-		String stopwordsFilePath = "/lang/stop_words_en.txt";
 		try {
-			// Extracting stop words to external file, because of Weka can't
-			// read stop words from file, which included to jar archive
-			File temp = File.createTempFile("stop_words_unpacked", ".tmp");
-
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(stopwordsFilePath), "UTF-8"));
-					PrintWriter pw = new PrintWriter(temp)) {
-				String s;
-				while ((s = br.readLine()) != null) {
-					pw.println(s);
-				}
-			}
-
-			filter.setStopwords(new File(temp.getAbsolutePath()));
+			File temp = this.unpackStopwordsToTempFile();
+			filter.setStopwords(temp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return filter;
+	}
+
+	private File unpackStopwordsToTempFile() throws IOException, UnsupportedEncodingException, FileNotFoundException {
+		// Extracting stop words to external file, because of Weka can't
+		// read stop words from file, which included to jar archive
+		File temp = File.createTempFile("stop_words_unpacked", ".tmp");
+
+		// TODO: ability to configure path
+		String stopwordsResource = "/lang/stop_words_en.txt";
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(stopwordsResource), "UTF-8"));
+				PrintWriter pw = new PrintWriter(temp)) {
+			String s;
+			while ((s = br.readLine()) != null) {
+				pw.println(s);
+			}
+		}
+		return temp;
 	}
 }

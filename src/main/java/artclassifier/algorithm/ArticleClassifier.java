@@ -27,6 +27,7 @@ import artclassifier.util.Name;
 import artclassifier.wikitext.WikiPageCategory;
 import artclassifier.wikitext.WikiPageSection;
 import artclassifier.wikitext.WikiPageTemplate;
+import artclassifier.wikitext.WikiPageTemplateArgument;
 
 // TODO: consider usage of wiki markup parsing stuff - for creating better features
 // https://code.google.com/p/gwtwiki/wiki/Mediawiki2HTML
@@ -339,6 +340,28 @@ public class ArticleClassifier {
 					public StringToWordVector getFilter() {
 						StringToWordVector filter = super.getFilter();
 						filter.setAttributeNamePrefix("template_name_");
+						return filter;
+					}
+				},
+
+				new StringFeature("template_arguments") {
+					@Override
+					protected String calculate(Article article) {
+						StringBuilder sb = new StringBuilder();
+						for (WikiPageTemplateArgument templateArgument : article.getWikiPageFeatures().getTemplateArguments()) {
+							sb.append(templateArgument.getName()).append(" ");
+						}
+						String templateArguments = sb.toString();
+						templateArguments = super.replaceYears(templateArguments);
+						templateArguments = super.replaceNumbers(templateArguments);
+						templateArguments = super.removeNonCharacters(templateArguments);
+						return templateArguments;
+					}
+
+					@Override
+					public StringToWordVector getFilter() {
+						StringToWordVector filter = super.getFilter();
+						filter.setAttributeNamePrefix("template_argument_");
 						return filter;
 					}
 				},
