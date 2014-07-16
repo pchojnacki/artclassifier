@@ -89,7 +89,7 @@ public abstract class StringFeature extends Feature {
 		filter.setUseStoplist(true);
 
 		// TODO: ability to configure path
-		String stopwordsFilePath = "/stop_words.txt";
+		String stopwordsFilePath = "/stop_words_en.txt";
 		try {
 			// Extracting stop words to external file, because of Weka can't
 			// read stop words from file, which included to jar archive

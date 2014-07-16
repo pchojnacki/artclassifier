@@ -1,2 +1,6 @@
-List of names taken from: http://stackoverflow.com/questions/1452003/plain-computer-parseable-lists-of-common-first-names/1452049#1452049
-List of stop words taken from: http://www.ranks.nl/stopwords
+List of names taken from: 
+http://stackoverflow.com/questions/1452003/plain-computer-parseable-lists-of-common-first-names/1452049#1452049
+
+List of stop words taken from: 
+http://www.ranks.nl/stopwords
+http://www.ranks.nl/stopwords/german
