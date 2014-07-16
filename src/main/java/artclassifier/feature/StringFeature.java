@@ -9,10 +9,10 @@ import java.io.PrintWriter;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
+import weka.core.tokenizers.WordTokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 import artclassifier.algorithm.Article;
 import artclassifier.util.SnowballStemmer;
-import artclassifier.util.SpaceTokenizer;
 import de.abelssoft.wordtools.jwordsplitter.AbstractWordSplitter;
 import de.abelssoft.wordtools.jwordsplitter.impl.GermanWordSplitter;
 
@@ -82,7 +82,7 @@ public abstract class StringFeature extends Feature {
 
 		filter.setStemmer(new SnowballStemmer());
 
-		filter.setTokenizer(new SpaceTokenizer());
+		filter.setTokenizer(new WordTokenizer());
 
 		filter.setLowerCaseTokens(true);
 
