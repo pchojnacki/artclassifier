@@ -223,7 +223,6 @@ public class ArticleClassifier {
 						wikiText = super.replaceYears(wikiText);
 						wikiText = super.replaceNumbers(wikiText);
 						wikiText = super.removeNonCharacters(wikiText);
-						wikiText = super.splitGermanWords(wikiText);
 						return wikiText;
 					}
 
@@ -262,13 +261,37 @@ public class ArticleClassifier {
 						for (WikiPageCategory category : article.getWikiPageFeatures().getCategories()) {
 							sb.append(category.getTitle()).append(" ");
 						}
-						return sb.toString();
+						String categories = sb.toString();
+						categories = super.replaceYears(categories);
+						categories = super.replaceNumbers(categories);
+						categories = super.removeNonCharacters(categories);
+						return categories;
 					}
 
 					@Override
 					public StringToWordVector getFilter() {
 						StringToWordVector filter = super.getFilter();
 						filter.setAttributeNamePrefix("category_");
+						return filter;
+					}
+				},
+
+				new StringFeature("summary") {
+					@Override
+					protected String calculate(Article article) {
+						String summary = article.getWikiPageFeatures().getSummary();
+						summary = super.replaceYears(summary);
+						summary = super.replaceNumbers(summary);
+						summary = super.removeNonCharacters(summary);
+						return summary;
+					}
+
+					@Override
+					public StringToWordVector getFilter() {
+						StringToWordVector filter = super.getFilter();
+						filter.setAttributeNamePrefix("summary_");
+						filter.setTFTransform(true);
+						filter.setIDFTransform(true);
 						return filter;
 					}
 				},
