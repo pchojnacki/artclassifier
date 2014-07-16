@@ -103,11 +103,10 @@ public class ArticleClassifierService {
 	}
 
 	private static List<Article> readLabeledArticles() throws IOException, JsonParseException, JsonMappingException {
-		List<Article> articles = new ObjectMapper().readValue(
-				new JsonFactory().createJsonParser(
-						ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
+		List<Article> articles = new ObjectMapper().readValue(new JsonFactory().createJsonParser(
+				ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
 				new TypeReference<List<Article>>() {
-				});
+		});
 		return articles;
 	}
 

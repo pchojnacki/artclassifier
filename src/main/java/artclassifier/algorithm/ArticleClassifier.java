@@ -25,6 +25,8 @@ import artclassifier.feature.NumericFeature;
 import artclassifier.feature.StringFeature;
 import artclassifier.util.Name;
 import artclassifier.wikitext.WikiPageCategory;
+import artclassifier.wikitext.WikiPageSection;
+import artclassifier.wikitext.WikiPageTemplate;
 
 // TODO: consider usage of wiki markup parsing stuff - for creating better features
 // https://code.google.com/p/gwtwiki/wiki/Mediawiki2HTML
@@ -293,6 +295,50 @@ public class ArticleClassifier {
 						filter.setAttributeNamePrefix("summary_");
 						filter.setTFTransform(true);
 						filter.setIDFTransform(true);
+						return filter;
+					}
+				},
+
+				new StringFeature("sections") {
+					@Override
+					protected String calculate(Article article) {
+						StringBuilder sb = new StringBuilder();
+						for (WikiPageSection section : article.getWikiPageFeatures().getSections()) {
+							sb.append(section.getTitle()).append(" ");
+						}
+						String sections = sb.toString();
+						sections = super.replaceYears(sections);
+						sections = super.replaceNumbers(sections);
+						sections = super.removeNonCharacters(sections);
+						return sections;
+					}
+
+					@Override
+					public StringToWordVector getFilter() {
+						StringToWordVector filter = super.getFilter();
+						filter.setAttributeNamePrefix("section_");
+						return filter;
+					}
+				},
+
+				new StringFeature("template_names") {
+					@Override
+					protected String calculate(Article article) {
+						StringBuilder sb = new StringBuilder();
+						for (WikiPageTemplate template : article.getWikiPageFeatures().getTemplates()) {
+							sb.append(template.getName()).append(" ");
+						}
+						String templateNames = sb.toString();
+						templateNames = super.replaceYears(templateNames);
+						templateNames = super.replaceNumbers(templateNames);
+						templateNames = super.removeNonCharacters(templateNames);
+						return templateNames;
+					}
+
+					@Override
+					public StringToWordVector getFilter() {
+						StringToWordVector filter = super.getFilter();
+						filter.setAttributeNamePrefix("template_name_");
 						return filter;
 					}
 				},
