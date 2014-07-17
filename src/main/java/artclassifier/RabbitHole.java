@@ -10,11 +10,12 @@ import java.util.List;
 public class RabbitHole {
 	public static final String INLET_QUEUE_NAME = "ArtClassifier.article.ready.queue";
 	public static final String INLET_ROUTING_KEY = "article.ready";
-
-	public static final String OUTLET_ROUTING_KEY = "article_type.ready";
-
-
 	public static final String INLET_EXCHANGE_NAME = "test_ex";
+
+
+	public static final String OUTLET_ROUTING_KEY = "article_type2.ready";
+	public static final String OUTLET_EXCHANGE_NAME = "test_ex";
+
 	public static final String FAILURES_EXCHANGE_NAME = "test_ex";
 	public static final String FAILURES_ROUTING_KEY = "ArtClassifier.article.failures";
 
@@ -25,9 +26,9 @@ public class RabbitHole {
 	public static final String HOSTNAME;
 
 	static {
-		HOSTNAME = "dev-datapi-s1";
-		USERNAME = "ev-guest";
-		PASSWORD = "ev-guest";
+		HOSTNAME = System.getenv("RABBIT_HOSTNAME");
+		USERNAME = System.getenv("RABBIT_USERNAME");
+		PASSWORD = System.getenv("RABBIT_PASSWORD");
 	}
 
 	private ConnectionFactory connectionFactory;
@@ -80,6 +81,8 @@ public class RabbitHole {
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 
 			if (processDelivery(delivery)) {
+				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+			} else {
 				channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, false);
 			}
 		}
@@ -87,20 +90,27 @@ public class RabbitHole {
 
 	private Boolean processDelivery(QueueingConsumer.Delivery delivery) throws IOException {
 		JSONObject obj = new JSONObject(delivery.getBody());
-		if (obj.isNull("title") || obj.isNull("wikitext")){
+		if (obj.isNull("title") || obj.isNull("wikitext") || obj.isNull("id")){
 			return false;
 		}
 
 		Article art = new Article();
 		art.setTitle(obj.getString("title"));
 		art.setWikiText(obj.getString("wikitext"));
+		String result;
 		try {
-			String result = classifier.calssifySingleChoise(art);
+			result = classifier.calssifySingleChoise(art);
 			//FIXME: too generic exception
 		} catch (Exception ex) {
 			System.err.println(ex);
 			return false;
 		}
+
+		JSONObject resultObj = new JSONObject();
+		resultObj.put("id", obj.get("id"));
+		resultObj.put("article_type", result);
+		channel.basicPublish(OUTLET_EXCHANGE_NAME, OUTLET_ROUTING_KEY, null, resultObj.toString().getBytes());
+		return true;
 	}
 
 	public static void main(String[] args) throws Exception {
