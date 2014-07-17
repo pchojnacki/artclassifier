@@ -173,29 +173,31 @@ public class ArticleClassifier {
 	private void doCrossValidation(Instances trainingSet, int foldsNum, StringBuilder reportBuilder) throws Exception {
 		Evaluation cvEaluation = new Evaluation(trainingSet);
 		cvEaluation.crossValidateModel(this.classifier, trainingSet, foldsNum, new Random(1));
-		reportBuilder.append(cvEaluation.toSummaryString()).append("\n");
+		reportBuilder.append("\n").append("Cross-validation").append("\n");
+		this.appendToReport(reportBuilder, cvEaluation);
 	}
 
 	private void evaluateOnValidationSet(List<Article> validationSetArticles, StringBuilder reportBuilder) throws Exception {
-
 		Instances validationSet = this.createInstancesFromLabeledArticles(validationSetArticles, "validationSet");
+		Evaluation evaluation = new Evaluation(validationSet);
+		evaluation.evaluateModel(this.classifier, validationSet);
+		reportBuilder.append("\n").append("Using evaluation-set").append("\n");
+		this.appendToReport(reportBuilder, evaluation);
+	}
 
-		Evaluation eval = new Evaluation(validationSet);
-		eval.evaluateModel(this.classifier, validationSet);
-
-		reportBuilder.append(eval.toSummaryString()).append("\n");
-		reportBuilder.append(eval.toMatrixString()).append("\n");
-
+	private void appendToReport(StringBuilder reportBuilder, Evaluation evaluation) throws Exception {
+		reportBuilder.append(evaluation.toSummaryString()).append("\n");
+		reportBuilder.append(evaluation.toMatrixString()).append("\n");
 		reportBuilder.append("FP\tFN\tF-score\tRecall\tPrecision\tLabel").append("\n");
 		for (int i = 0; i < this.labelAttribute.numValues(); i++) {
 			String label = this.labelAttribute.value(i);
 
 			reportBuilder.append(String.format("%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n",
-					eval.falsePositiveRate(i),
-					eval.falseNegativeRate(i),
-					eval.fMeasure(i),
-					eval.recall(i),
-					eval.precision(i),
+					evaluation.falsePositiveRate(i),
+					evaluation.falseNegativeRate(i),
+					evaluation.fMeasure(i),
+					evaluation.recall(i),
+					evaluation.precision(i),
 					label));
 		}
 	}
@@ -222,11 +224,11 @@ public class ArticleClassifier {
 				new StringFeature("plain") {
 					@Override
 					protected String calculate(Article article) {
-						String wikiText = article.getWikiPageFeatures().getPlain();
-						wikiText = super.replaceYears(wikiText);
-						wikiText = super.replaceNumbers(wikiText);
-						wikiText = super.removeNonCharacters(wikiText);
-						return wikiText;
+						String plain = article.getWikiPageFeatures().getPlain();
+						plain = super.replaceYears(plain);
+						plain = super.replaceNumbers(plain);
+						plain = super.removeNonCharacters(plain);
+						return plain;
 					}
 
 					@Override

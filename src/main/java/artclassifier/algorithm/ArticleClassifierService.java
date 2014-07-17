@@ -106,7 +106,7 @@ public class ArticleClassifierService {
 		List<Article> articles = new ObjectMapper().readValue(new JsonFactory().createJsonParser(
 				ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
 				new TypeReference<List<Article>>() {
-				});
+		});
 		return articles;
 	}
 
