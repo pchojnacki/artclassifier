@@ -33,7 +33,9 @@ import artclassifier.util.WikiaArticlesDownloader;
 @SuppressWarnings("unused")
 public class ArticleClassifierService {
 
-	private static final String LABELED_ARTICLES_JSON_FILE = "/training_set/2014.01.26.json";
+	// private static final String LABELED_ARTICLES_JSON_FILE =
+	// "/training_set/2014.01.26.json";
+	private static final String LABELED_ARTICLES_JSON_FILE = "/training_set/de_training_set.json";
 
 	public static void main(String[] args) throws Exception {
 
@@ -71,6 +73,8 @@ public class ArticleClassifierService {
 	public static ArticleClassifier getArticleClassifier(boolean splitForValidationSet) throws Exception {
 		List<Article> labeledArticles = readLabeledArticles();
 
+		System.out.println(labeledArticles.size());
+
 		Collections.shuffle(labeledArticles, new Random(10));
 
 		int trainingSetSize = (labeledArticles.size() * 7) / 10;
@@ -107,7 +111,7 @@ public class ArticleClassifierService {
 		List<Article> articles = new ObjectMapper().readValue(new JsonFactory().createJsonParser(
 				ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
 				new TypeReference<List<Article>>() {
-				});
+		});
 		return articles;
 	}
 

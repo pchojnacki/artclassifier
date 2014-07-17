@@ -164,6 +164,9 @@ public class ArticleClassifier {
 
 		if (validationSetArticles != null) {
 			this.evaluateOnValidationSet(validationSetArticles, reportBuilder);
+			reportBuilder.append("\n");
+			reportBuilder.append("Training set size: ").append(trainingSetArticles.size()).append("\n");
+			reportBuilder.append("Validation set size: ").append(validationSetArticles.size()).append("\n");
 		}
 
 		String report = reportBuilder.toString();

@@ -5,7 +5,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import artclassifier.wikitext.WikiPageFeatures;
 import artclassifier.wikitext.WikiTextFeaturesHelper;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true, value = { "wikiPageFeatures" })
 public class Article {
 
 	private String wikiText;

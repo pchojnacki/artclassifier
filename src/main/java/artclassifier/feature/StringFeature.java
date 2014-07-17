@@ -54,6 +54,8 @@ public abstract class StringFeature extends Feature {
 		s = this.replaceYears(s);
 		s = this.replaceNumbers(s);
 		s = this.removeNonCharacters(s);
+
+		s = this.splitGermanWords(s);
 		return s;
 	}
 
@@ -89,7 +91,8 @@ public abstract class StringFeature extends Feature {
 
 		filter.setAttributeIndices("1");
 
-		filter.setStemmer(new SnowballStemmer("english"));
+		// filter.setStemmer(new SnowballStemmer("english"));
+		filter.setStemmer(new SnowballStemmer("german"));
 
 		filter.setTokenizer(new WordTokenizer());
 
@@ -113,7 +116,8 @@ public abstract class StringFeature extends Feature {
 		File temp = File.createTempFile("stop_words_unpacked", ".tmp");
 
 		// TODO: ability to configure path
-		String stopwordsResource = "/lang/stop_words_en.txt";
+		// String stopwordsResource = "/lang/stop_words_en.txt";
+		String stopwordsResource = "/lang/stop_words_de.txt";
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(stopwordsResource), "UTF-8"));
 				PrintWriter pw = new PrintWriter(temp)) {
 			String s;
