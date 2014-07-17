@@ -1,7 +1,5 @@
 package artclassifier.wikitext;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.Page;
 import org.sweble.wikitext.lazy.encval.IllegalCodePoint;
 import org.sweble.wikitext.lazy.parser.Bold;
@@ -37,7 +35,6 @@ import de.fau.cs.osr.ptk.common.ast.Text;
  */
 @SuppressWarnings("unused")
 public class WikitextReaderVisitor extends AstVisitor {
-	private static Logger logger = LoggerFactory.getLogger(WikitextReaderVisitor.class.toString());
 	private final StringBuilder stringBuilder = new StringBuilder();
 	private final StringBuilder abstractStringBuilder = new StringBuilder();
 	private final WikiPageFeatures wikiPageFeatures;
@@ -92,7 +89,7 @@ public class WikitextReaderVisitor extends AstVisitor {
 		 * Text textNode = (Text) node; emmitPlain(textNode.getContent()); }
 		 * else if( node instanceof Bold ) { } else if( node instanceof Italics
 		 * ) { } else if( node instanceof InternalLink ) {
-		 *
+		 * 
 		 * } else { logger.info("Unexpected element in Section title: " +
 		 * node.getNodeName()); } }
 		 */
