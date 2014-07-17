@@ -17,6 +17,7 @@ import org.codehaus.jackson.type.TypeReference;
 
 import weka.attributeSelection.ASEvaluation;
 import weka.attributeSelection.InfoGainAttributeEval;
+import weka.attributeSelection.PrincipalComponents;
 import weka.attributeSelection.Ranker;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
@@ -82,14 +83,14 @@ public class ArticleClassifierService {
 
 		// see:
 		// http://stackoverflow.com/questions/11482108/wekas-pca-is-taking-too-long-to-run/11793003#11793003
-		// classifier = getAttributeSelectionClassifier(
-		// getAttributeSelectionClassifier(getSVM(), new PrincipalComponents(),
-		// 30),
-		// new InfoGainAttributeEval(), 300);
+		classifier = getAttributeSelectionClassifier(
+				getAttributeSelectionClassifier(getSVM(), new PrincipalComponents(), 40),
+				new InfoGainAttributeEval(), 600);
 
 		// Classifier, which measures informativeness of attributes, and taking
 		// into account only 300 most informative
-		classifier = getAttributeSelectionClassifier(getSVM(), new InfoGainAttributeEval(), 500);
+		// classifier = getAttributeSelectionClassifier(getSVM(), new
+		// InfoGainAttributeEval(), 500);
 
 		boolean performCrossValidation = false;
 
@@ -106,7 +107,7 @@ public class ArticleClassifierService {
 		List<Article> articles = new ObjectMapper().readValue(new JsonFactory().createJsonParser(
 				ArticleClassifierService.class.getResourceAsStream(LABELED_ARTICLES_JSON_FILE)),
 				new TypeReference<List<Article>>() {
-		});
+				});
 		return articles;
 	}
 
