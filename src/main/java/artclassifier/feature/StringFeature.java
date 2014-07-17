@@ -50,6 +50,13 @@ public abstract class StringFeature extends Feature {
 		return true;
 	}
 
+	protected String prepare(String s) {
+		s = this.replaceYears(s);
+		s = this.replaceNumbers(s);
+		s = this.removeNonCharacters(s);
+		return s;
+	}
+
 	protected String replaceYears(String s) {
 		return s.replaceAll("(19|20)\\d{2}", " year ");
 	}

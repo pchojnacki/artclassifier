@@ -225,9 +225,7 @@ public class ArticleClassifier {
 					@Override
 					protected String calculate(Article article) {
 						String plain = article.getWikiPageFeatures().getPlain();
-						plain = super.replaceYears(plain);
-						plain = super.replaceNumbers(plain);
-						plain = super.removeNonCharacters(plain);
+						plain = super.prepare(plain);
 						return plain;
 					}
 
@@ -246,9 +244,7 @@ public class ArticleClassifier {
 					@Override
 					protected String calculate(Article article) {
 						String title = article.getWikiPageFeatures().getTitle();
-						title = super.replaceYears(title);
-						title = super.replaceNumbers(title);
-						title = super.removeNonCharacters(title);
+						title = super.prepare(title);
 						return title;
 					}
 
@@ -268,9 +264,7 @@ public class ArticleClassifier {
 							sb.append(category.getTitle()).append(" ");
 						}
 						String categories = sb.toString();
-						categories = super.replaceYears(categories);
-						categories = super.replaceNumbers(categories);
-						categories = super.removeNonCharacters(categories);
+						categories = super.prepare(categories);
 						return categories;
 					}
 
@@ -286,9 +280,7 @@ public class ArticleClassifier {
 					@Override
 					protected String calculate(Article article) {
 						String summary = article.getWikiPageFeatures().getSummary();
-						summary = super.replaceYears(summary);
-						summary = super.replaceNumbers(summary);
-						summary = super.removeNonCharacters(summary);
+						summary = super.prepare(summary);
 						return summary;
 					}
 
@@ -310,9 +302,7 @@ public class ArticleClassifier {
 							sb.append(section.getTitle()).append(" ");
 						}
 						String sections = sb.toString();
-						sections = super.replaceYears(sections);
-						sections = super.replaceNumbers(sections);
-						sections = super.removeNonCharacters(sections);
+						sections = super.prepare(sections);
 						return sections;
 					}
 
@@ -332,9 +322,7 @@ public class ArticleClassifier {
 							sb.append(template.getName()).append(" ");
 						}
 						String templateNames = sb.toString();
-						templateNames = super.replaceYears(templateNames);
-						templateNames = super.replaceNumbers(templateNames);
-						templateNames = super.removeNonCharacters(templateNames);
+						templateNames = super.prepare(templateNames);
 						return templateNames;
 					}
 
@@ -354,9 +342,7 @@ public class ArticleClassifier {
 							sb.append(templateArgument.getName()).append(" ");
 						}
 						String templateArguments = sb.toString();
-						templateArguments = super.replaceYears(templateArguments);
-						templateArguments = super.replaceNumbers(templateArguments);
-						templateArguments = super.removeNonCharacters(templateArguments);
+						templateArguments = super.prepare(templateArguments);
 						return templateArguments;
 					}
 
