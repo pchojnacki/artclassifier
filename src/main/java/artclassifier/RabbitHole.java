@@ -93,8 +93,12 @@ public class RabbitHole {
 	}
 
 	private Boolean processDelivery(QueueingConsumer.Delivery delivery) throws IOException {
-		JSONObject obj = new JSONObject(delivery.getBody());
+		JSONObject obj = new JSONObject(new String(delivery.getBody()));
 		if (obj.isNull("title") || obj.isNull("wikitext") || obj.isNull("id") || obj.isNull("wiki_lang")) {
+			return false;
+		}
+
+		if (!obj.getString("wiki_lang").equalsIgnoreCase("de")){
 			return false;
 		}
 
@@ -105,6 +109,7 @@ public class RabbitHole {
 		try {
 			result = classifier.classifySingleBestChoice(art);
 			//FIXME: too generic exception
+			System.err.println("res: " + result);
 		} catch (Exception ex) {
 			System.err.println(ex);
 			return false;
@@ -121,6 +126,7 @@ public class RabbitHole {
 		RabbitHole rabbit = new RabbitHole();
 		rabbit.init();
 		rabbit.initializeFailuresQueue();
+		System.err.println("Launching...");
 		rabbit.launchQueue();
 
 		rabbit.close();
