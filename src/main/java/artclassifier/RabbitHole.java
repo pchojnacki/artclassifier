@@ -13,11 +13,13 @@ public class RabbitHole {
 	public static final String INLET_EXCHANGE_NAME = "test_ex";
 
 
-	public static final String OUTLET_ROUTING_KEY = "article_type2.ready";
+	public static final String OUTLET_ROUTING_KEY = "article_type.ready";
 	public static final String OUTLET_EXCHANGE_NAME = "test_ex";
 
 	public static final String FAILURES_EXCHANGE_NAME = "test_ex";
 	public static final String FAILURES_ROUTING_KEY = "ArtClassifier.article.failures";
+
+	public static final String FAILURES_QUEUE_NAME = "ArtClassifier.article.failures.queue";
 
 
 	public static final String USERNAME;
@@ -50,28 +52,29 @@ public class RabbitHole {
 		return connectionFactory;
 	}
 
-	public void close() throws IOException{
+	public void close() throws IOException {
 		conn.close();
 		channel.close();
 	}
 
+	public void initializeFailuresQueue() throws IOException {
+		AMQP.Queue.DeclareOk declareOk = channel.queueDeclare(FAILURES_QUEUE_NAME, true, false, false, null);
+		AMQP.Queue.BindOk bindOk = channel.queueBind(declareOk.getQueue(), FAILURES_EXCHANGE_NAME, FAILURES_ROUTING_KEY);
+	}
+
 	//FIXME: too generic Exception
 	public void init() throws Exception {
-		if (!objectInitialized) {
-			classifier = ArticleClassifierService.getArticleClassifier(false);
+		classifier = ArticleClassifierService.getArticleClassifier(false);
 
-			conn = getConnectionFactory().newConnection();
-			channel = conn.createChannel();
+		conn = getConnectionFactory().newConnection();
+		channel = conn.createChannel();
 
-			HashMap<String, Object> queueArgs = new HashMap<String, Object>();
-			queueArgs.put("x-dead-letter-exchange", FAILURES_EXCHANGE_NAME);
-			queueArgs.put("x-dead-letter-routing-key", FAILURES_ROUTING_KEY);
+		HashMap<String, Object> queueArgs = new HashMap<String, Object>();
+		queueArgs.put("x-dead-letter-exchange", FAILURES_EXCHANGE_NAME);
+		queueArgs.put("x-dead-letter-routing-key", FAILURES_ROUTING_KEY);
 
-			AMQP.Queue.DeclareOk declareOk = channel.queueDeclare(INLET_QUEUE_NAME, true, false, false, queueArgs);
-
-			AMQP.Queue.BindOk bindOk = channel.queueBind(declareOk.getQueue(), INLET_EXCHANGE_NAME, INLET_ROUTING_KEY);
-			objectInitialized = true;
-		}
+		AMQP.Queue.DeclareOk declareOk = channel.queueDeclare(INLET_QUEUE_NAME, true, false, false, queueArgs);
+		AMQP.Queue.BindOk bindOk = channel.queueBind(declareOk.getQueue(), INLET_EXCHANGE_NAME, INLET_ROUTING_KEY);
 	}
 
 	public void launchQueue() throws IOException, InterruptedException {
@@ -90,7 +93,7 @@ public class RabbitHole {
 
 	private Boolean processDelivery(QueueingConsumer.Delivery delivery) throws IOException {
 		JSONObject obj = new JSONObject(delivery.getBody());
-		if (obj.isNull("title") || obj.isNull("wikitext") || obj.isNull("id")){
+		if (obj.isNull("title") || obj.isNull("wikitext") || obj.isNull("id") || obj.isNull("wiki_lang")) {
 			return false;
 		}
 
@@ -116,7 +119,7 @@ public class RabbitHole {
 	public static void main(String[] args) throws Exception {
 		RabbitHole rabbit = new RabbitHole();
 		rabbit.init();
-
+		rabbit.initializeFailuresQueue();
 		rabbit.launchQueue();
 
 		rabbit.close();
