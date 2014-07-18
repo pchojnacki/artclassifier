@@ -1,11 +1,13 @@
 package artclassifier;
 
+import artclassifier.algorithm.Article;
+import artclassifier.algorithm.ArticleClassifier;
+import artclassifier.algorithm.ArticleClassifierService;
 import com.rabbitmq.client.*;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 public class RabbitHole {
 	public static final String INLET_QUEUE_NAME = "ArtClassifier.article.ready.queue";
@@ -102,7 +104,7 @@ public class RabbitHole {
 		art.setWikiText(obj.getString("wikitext"));
 		String result;
 		try {
-			result = classifier.calssifySingleChoise(art);
+			result = classifier.classifySingleBestChoice(art);
 			//FIXME: too generic exception
 		} catch (Exception ex) {
 			System.err.println(ex);
