@@ -36,7 +36,6 @@ public class RabbitHole {
 	}
 
 	private ConnectionFactory connectionFactory;
-	private Boolean objectInitialized = false;
 	private Channel channel;
 	private Connection conn;
 	private ArticleClassifier classifier;
@@ -71,7 +70,7 @@ public class RabbitHole {
 		conn = getConnectionFactory().newConnection();
 		channel = conn.createChannel();
 
-		HashMap<String, Object> queueArgs = new HashMap<String, Object>();
+		HashMap<String, Object> queueArgs = new HashMap<>();
 		queueArgs.put("x-dead-letter-exchange", FAILURES_EXCHANGE_NAME);
 		queueArgs.put("x-dead-letter-routing-key", FAILURES_ROUTING_KEY);
 
